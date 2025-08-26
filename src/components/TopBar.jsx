@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 
-const TopBar = ({ title, onBack, onOpenFile }) => {
+const TopBar = ({ title, onBack, onOpenFile, isVisible }) => {
   const fileInputRef = useRef(null)
 
   const handleOpenFile = () => {
@@ -17,7 +17,7 @@ const TopBar = ({ title, onBack, onOpenFile }) => {
   }
 
   return (
-    <div className="topbar">
+    <div className={`topbar ${isVisible ? '' : 'top-hidden'}`}>
       <div className="top-left">
         <button className="back" id="backBtn" title="Back" aria-label="Go back" onClick={onBack}>
           <i className="ti ti-arrow-left small-icon"></i>

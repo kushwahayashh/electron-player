@@ -112,6 +112,31 @@ const VideoPlayer = () => {
     });
   };
 
+  const showSkipFeedback = (isForward) => {
+    // Create separate overlays for left and right feedback
+    const overlayClass = isForward ? 'skip-forward-overlay' : 'skip-backward-overlay';
+    let overlay = document.querySelector(`.${overlayClass}`);
+    
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = overlayClass;
+      playerRef.current?.appendChild(overlay);
+    }
+
+    // Clear previous icons
+    overlay.innerHTML = '';
+
+    const icon = document.createElement('i');
+    icon.className = `skip-feedback-icon ti ${isForward ? 'ti-chevrons-right' : 'ti-chevrons-left'}`;
+    overlay.appendChild(icon);
+
+    // Trigger animation
+    icon.classList.remove('animate');
+    requestAnimationFrame(() => {
+      icon.classList.add('animate');
+    });
+  };
+
   const handleOpenFile = (file) => {
     if (file) {
       const url = URL.createObjectURL(file);
@@ -148,16 +173,22 @@ const VideoPlayer = () => {
           showPlaybackFeedback(!isPlaying);
           break;
         case 'ArrowRight':
+          e.preventDefault();
           skipForward(10);
+          showSkipFeedback(true);
           break;
         case 'ArrowLeft':
+          e.preventDefault();
           skipBackward(10);
+          showSkipFeedback(false);
           break;
         case 'KeyF':
           toggleFullscreen();
           break;
         case 'KeyM':
+          e.preventDefault();
           toggleMute();
+          showVolumeFeedback(!isMuted);
           break;
       }
     };
@@ -222,6 +253,7 @@ const VideoPlayer = () => {
         title={videoTitle} 
         onBack={handleBack}
         onOpenFile={handleOpenFile}
+        isVisible={showControls}
       />
 
       <div className={`controls ${showControls ? '' : 'hidden'}`}>
@@ -236,7 +268,10 @@ const VideoPlayer = () => {
 
         <div className="controls-row">
           <div className="left-controls">
-            <button className="control-btn" onClick={() => skipBackward(10)} title="Back 10s">
+            <button className="control-btn" onClick={() => {
+              skipBackward(10);
+              showSkipFeedback(false);
+            }} title="Back 10s">
               <i className="ti ti-chevrons-left small-icon" />
             </button>
 
@@ -249,7 +284,10 @@ const VideoPlayer = () => {
               />
             </button>
 
-            <button className="control-btn" onClick={() => skipForward(10)} title="Forward 10s">
+            <button className="control-btn" onClick={() => {
+              skipForward(10);
+              showSkipFeedback(true);
+            }} title="Forward 10s">
               <i className="ti ti-chevrons-right small-icon" />
             </button>
 
