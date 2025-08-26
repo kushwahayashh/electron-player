@@ -1,0 +1,115 @@
+{
+  "name": "luna-video-player",
+  "version": "1.0.0",
+  "description": "Luna - A professional video player built with Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "vite --port 3000 --strictPort",
+    "dev-electron": "cross-env NODE_ENV=development electron .",
+    "dev-all": "concurrently \"npm run dev\" \"npm run dev-electron\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build-electron": "npm run build && electron-builder",
+    "build-win": "npm run build && electron-builder --win --publish=never",
+    "build-win-nosign": "npm run build && set CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder --win --publish=never",
+    "dist": "npm run build && electron-builder --publish=never"
+  },
+  "keywords": [
+    "video",
+    "player",
+    "electron",
+    "react",
+    "vite"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.0.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "vite": "^4.5.14"
+  },
+  "build": {
+    "appId": "com.yourcompany.videoplayer",
+    "productName": "Luna",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "fileAssociations": [
+      {
+        "ext": "mp4",
+        "name": "MP4 Video",
+        "description": "MP4 Video File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "avi",
+        "name": "AVI Video",
+        "description": "AVI Video File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "mkv",
+        "name": "MKV Video",
+        "description": "MKV Video File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "mov",
+        "name": "MOV Video",
+        "description": "MOV Video File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "wmv",
+        "name": "WMV Video",
+        "description": "WMV Video File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "webm",
+        "name": "WebM Video",
+        "description": "WebM Video File",
+        "role": "Viewer"
+      }
+    ]
+  }
+}

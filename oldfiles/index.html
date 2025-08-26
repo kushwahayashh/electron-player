@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    :root {
+      --bg: #0f1113;
+      --panel: rgba(10, 12, 14, 0.65);
+      --accent: #1e90ff;
+      --muted: #c0c2c4;
+      --white: #fff;
+      --control-h: 56px;
+      --radius: 10px;
+      --transition-fast: 0.15s ease;
+      --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: #0b0b0b;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .wrap {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      padding: 0;
+      margin: 0;
+    }
+
+        .player {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Add this */
+    }
+
+    video {
+      width: 100%;
+      height: auto; /* Change this */
+      max-height: 100%; /* Add this */
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+
+    /* Top bar */
+    .topbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      pointer-events: auto;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 100%);
+      color: var(--white);
+      z-index: 10;
+    }
+
+    .top-left,
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: inherit;
+      transition: var(--transition-fast);
+    }
+
+    .back:hover {
+      opacity: 0.7;
+    }
+
+    .title {
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.1px;
+      transition: var(--transition-fast);
+      margin-left: 6px;
+    }
+
+    #openFileBtn {
+      transition: var(--transition-fast);
+    }
+
+    .top-hidden {
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+    }
+
+    /* Controls overlay */
+    .controls-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 140px;
+      pointer-events: none;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      z-index: 5;
+    }
+
+    .controls-overlay.visible {
+      opacity: 1;
+    }
+
+    /* Controls container */
+    .controls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 14px 18px 20px;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0));
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .controls.hidden {
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+    }
+
+    /* Progress area */
+    .progress-wrap {
+      width: 100%;
+      height: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-left,
+    .time-right {
+      font-size: 13px;
+      color: var(--white);
+      font-weight: 700;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .progress {
+      position: relative;
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: height var(--transition-smooth);
+    }
+
+    .progress:hover {
+      height: 10px;
+    }
+
+    .progress .buffered {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      transition: width 0.1s linear;
+    }
+
+    .progress .filled {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), #76b7ff);
+      border-radius: 6px;
+      transition: width 0.06s linear;
+    }
+
+    .thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      left: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width var(--transition-smooth), height var(--transition-smooth);
+    }
+
+    .thumb::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--white);
+      display: block;
+      transition: width var(--transition-smooth), height var(--transition-smooth);
+    }
+
+    .progress:hover .thumb {
+      width: 18px;
+      height: 18px;
+    }
+
+    .progress:hover .thumb::after {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* Progress tooltip */
+    .progress-tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: var(--white);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      margin-top: 8px;
+      z-index: 15;
+    }
+
+    .progress-tooltip.visible {
+      opacity: 1;
+    }
+
+    .progress-tooltip::after {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+    }
+
+    /* Controls row */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .left-controls,
+    .center-controls,
+    .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .control-btn {
+      height: 44px;
+      padding: 0 12px;
+      border: none;
+      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      user-select: none;
+      background: none;
+      transition: var(--transition-fast);
+      transform: scale(1);
+      transform-origin: center;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .big-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      font-size: 19px;
+    }
+
+    .small-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+      vertical-align: middle;
+      opacity: 0.95;
+    }
+
+    /* Icon styling */
+    .ti {
+      background: transparent !important;
+      vertical-align: middle;
+      font-size: 24px;
+    }
+    
+    .big-btn .ti {
+      font-size: 28px;
+    }
+
+    /* Volume controls */
+    .volume-control {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume-slider-container {
+      position: relative;
+      width: 0;
+      height: 6px;
+      opacity: 0;
+      transition: all var(--transition-smooth);
+      overflow: visible;
+      margin-left: 8px;
+      align-self: center;
+    }
+
+    .volume-control:hover .volume-slider-container {
+      opacity: 1;
+      width: 110px;
+    }
+
+    .volume-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: height var(--transition-smooth);
+      appearance: none;
+      outline: none;
+    }
+
+    .volume-slider:hover {
+      height: 10px;
+    }
+
+    .volume-slider::-webkit-slider-runnable-track {
+      height: 6px;
+      background: transparent;
+      border-radius: 6px;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: width var(--transition-smooth), height var(--transition-smooth);
+    }
+
+    .volume-slider:hover::-webkit-slider-thumb {
+      width: 18px;
+      height: 18px;
+    }
+
+    .volume-slider::-moz-range-track {
+      height: 6px;
+      background: transparent;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--white);
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+    }
+
+    .volume-filled {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 80%;
+      background: linear-gradient(90deg, var(--accent), #76b7ff);
+      border-radius: 6px;
+      pointer-events: none;
+      transition: width 0.06s linear;
+    }
+
+    .fullscreen-btn {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Playback Feedback Overlay */
+    .playback-feedback-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .feedback-icon {
+      font-size: 80px;
+      color: rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: none;
+    }
+
+    .feedback-icon.animate {
+      animation: feedbackAnimation 0.6s ease-out forwards;
+    }
+
+    @keyframes feedbackAnimation {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      30% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.4);
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 720px) {
+      .volume-control:hover .volume-slider-container {
+        width: 70px;
+      }
+
+      .title {
+        font-size: 14px;
+      }
+
+      .time-left,
+      .time-right {
+        display: none;
+      }
+
+      .controls {
+        padding-bottom: 12px;
+      }
+
+      .player {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="player" id="player">
+      <video id="video" preload="metadata" poster="poster.jpg" crossorigin="anonymous">
+        <!-- Replace with your video file -->
+        <source src="" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+      <div class="controls-overlay" id="controlsOverlay" aria-hidden="true"></div>
+
+      <div class="topbar">
+        <div class="top-left">
+          <button class="back" id="backBtn" title="Back" aria-label="Go back">
+            <i class="ti ti-arrow-left small-icon"></i>
+          </button>
+          <div class="title" id="title">Luna</div>
+        </div>
+        <div class="top-right">
+          <button class="control-btn" id="openFileBtn" title="Open Video File" aria-label="Open video file">
+            <i class="ti ti-align-right small-icon"></i>
+          </button>
+          <input type="file" id="fileInput" accept="video/*" style="display: none;" aria-hidden="true">
+        </div>
+      </div>
+
+      <div class="controls" id="controls">
+        <div class="progress-wrap">
+          <div class="time-left" id="curTime">0:00</div>
+          <div class="progress" id="progress">
+            <div class="buffered" id="buffered"></div>
+            <div class="filled" id="filled"></div>
+            <div class="thumb" id="thumb" style="left:0%;"></div>
+            <div class="progress-tooltip" id="progressTooltip">0:00</div>
+          </div>
+          <div class="time-right" id="durTime">0:00</div>
+        </div>
+
+        <div class="controls-row">
+          <div class="left-controls">
+            <button class="control-btn" id="skipBack" title="Back 10s">
+              <i class="ti ti-chevrons-left small-icon"></i>
+            </button>
+
+            <button class="control-btn big-btn" id="playPause" title="Play / Pause">
+              <i id="playIcon" class="ti ti-player-play-filled small-icon" style="display: inline-block;"></i>
+              <i id="pauseIcon" class="ti ti-player-pause-filled small-icon" style="display: none;"></i>
+            </button>
+
+            <button class="control-btn" id="skipForward" title="Forward 10s">
+              <i class="ti ti-chevrons-right small-icon"></i>
+            </button>
+
+            <div class="volume-control">
+              <button class="control-btn" id="muteBtn" title="Mute / Unmute">
+                <i id="volumeIcon" class="ti ti-volume small-icon" style="display: inline-block;"></i>
+                <i id="muteIcon" class="ti ti-volume-off small-icon" style="display: none;"></i>
+              </button>
+              <div class="volume-slider-container">
+                <div class="volume-slider" id="volumeTrack">
+                  <div class="volume-filled" id="volumeFilled"></div>
+                  <div class="thumb" id="volumeThumb" style="left:80%;"></div>
+                </div>
+                <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8" title="Volume"
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+              </div>
+            </div>
+          </div>
+
+          <div class="center-controls">
+          </div>
+
+          <div class="right-controls">
+            <button class="control-btn" id="fitBtn" title="Toggle Fit to Screen">
+              <i class="ti ti-arrows-maximize small-icon"></i>
+            </button>
+            <button class="control-btn fullscreen-btn" id="fsBtn" title="Toggle Fullscreen">
+              <i class="ti ti-maximize small-icon"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="previewcanvas.js" type="module"></script>
+  <script src="renderer.js" type="module"></script>
+</body>
+
+</html>

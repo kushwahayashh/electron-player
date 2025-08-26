@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playback Feedback Component</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    :root {
+      --feedback-animation-duration: 0.6s;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 800px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      color: #1e90ff;
+    }
+
+    .description {
+      margin-bottom: 40px;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .player-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-placeholder {
+      width: 100%;
+      height: 340px;
+      background: linear-gradient(45deg, #222, #333);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .video-placeholder-text {
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      background: #1a1a1a;
+    }
+
+    .control-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .control-btn:hover {
+      background: #0077ff;
+      transform: translateY(-2px);
+    }
+
+    .control-btn.mute {
+      background: #ff6b6b;
+    }
+
+    .control-btn.mute:hover {
+      background: #ff5252;
+    }
+
+    /* Playback Feedback Overlay */
+    .playback-feedback-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .feedback-icon {
+      font-size: 80px;
+      color: rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: none;
+    }
+
+    .feedback-icon.animate {
+      animation: feedbackAnimation var(--feedback-animation-duration) ease-out forwards;
+    }
+
+    @keyframes feedbackAnimation {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      30% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.4);
+      }
+    }
+
+    .code-sample {
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: left;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-top: 30px;
+    }
+
+    .code-header {
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      color: #1e90ff;
+    }
+
+    .comment {
+      color: #6a9955;
+    }
+
+    .selector {
+      color: #d7ba7d;
+    }
+
+    .property {
+      color: #9cdcfe;
+    }
+
+    .value {
+      color: #ce9178;
+    }
+
+    .at-rule {
+      color: #c586c0;
+    }
+
+    .note {
+      margin-top: 30px;
+      padding: 15px;
+      background: rgba(30, 144, 255, 0.1);
+      border-left: 4px solid #1e90ff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Playback Feedback Component</h1>
+    
+    <p class="description">
+      This is a self-contained component that displays visual feedback when a video is played, paused, muted, or unmuted.
+      The feedback icon appears in the center of the player, scales up, and then fades away.
+    </p>
+    
+    <div class="player-container">
+      <div class="video-placeholder">
+        <div class="video-placeholder-text">Video Player Area</div>
+        
+        <!-- Playback Feedback Overlay -->
+        <div class="playback-feedback-overlay">
+          <i class="feedback-icon ti ti-player-play-filled" id="feedbackIcon"></i>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="control-btn" id="playBtn">Play Video</button>
+        <button class="control-btn" id="pauseBtn">Pause Video</button>
+        <button class="control-btn mute" id="muteBtn">Mute</button>
+        <button class="control-btn mute" id="unmuteBtn">Unmute</button>
+      </div>
+    </div>
+    
+    <div class="code-header">Integration Instructions</div>
+    <div class="code-sample">
+      <pre><span class="comment">/* Add this CSS to your main stylesheet */</span>
+<span class="selector">.playback-feedback-overlay</span> {
+  <span class="property">position</span>: <span class="value">absolute</span>;
+  <span class="property">top</span>: <span class="value">0</span>;
+  <span class="property">left</span>: <span class="value">0</span>;
+  <span class="property">width</span>: <span class="value">100%</span>;
+  <span class="property">height</span>: <span class="value">100%</span>;
+  <span class="property">display</span>: <span class="value">flex</span>;
+  <span class="property">align-items</span>: <span class="value">center</span>;
+  <span class="property">justify-content</span>: <span class="value">center</span>;
+  <span class="property">pointer-events</span>: <span class="value">none</span>;
+  <span class="property">z-index</span>: <span class="value">10</span>;
+}
+
+<span class="selector">.feedback-icon</span> {
+  <span class="property">font-size</span>: <span class="value">80px</span>;
+  <span class="property">color</span>: <span class="value">rgba(255, 255, 255, 0.9)</span>;
+  <span class="property">opacity</span>: <span class="value">0</span>;
+  <span class="property">transform</span>: <span class="value">scale(0.8)</span>;
+  <span class="property">transition</span>: <span class="value">none</span>;
+}
+
+<span class="selector">.feedback-icon.animate</span> {
+  <span class="property">animation</span>: <span class="value">feedbackAnimation 0.6s ease-out forwards</span>;
+}
+
+<span class="at-rule">@keyframes</span> feedbackAnimation {
+  <span class="selector">0%</span> {
+    <span class="property">opacity</span>: <span class="value">0</span>;
+    <span class="property">transform</span>: <span class="value">scale(0.8)</span>;
+  }
+  <span class="selector">30%</span> {
+    <span class="property">opacity</span>: <span class="value">1</span>;
+    <span class="property">transform</span>: <span class="value">scale(1.2)</span>;
+  }
+  <span class="selector">100%</span> {
+    <span class="property">opacity</span>: <span class="value">0</span>;
+    <span class="property">transform</span>: <span class="value">scale(1.4)</span>;
+  }
+}</pre>
+    </div>
+    
+    <div class="code-sample">
+      <pre><span class="comment">/* Add this JavaScript to your player controller */</span>
+<span class="selector">showPlaybackFeedback</span>(<span class="selector">isPlaying</span>) {
+  <span class="comment">// Create or get the feedback overlay</span>
+  <span class="selector">let</span> overlay = <span class="selector">this.elements.player.querySelector</span>(<span class="value">'.playback-feedback-overlay'</span>);
+  
+  <span class="comment">// If overlay doesn't exist, create it</span>
+  <span class="selector">if</span> (!overlay) {
+    overlay = <span class="selector">document.createElement</span>(<span class="value">'div'</span>);
+    overlay.<span class="property">className</span> = <span class="value">'playback-feedback-overlay'</span>;
+    <span class="selector">this.elements.player.appendChild</span>(overlay);
+  }
+  
+  <span class="comment">// Create or get the feedback icon</span>
+  <span class="selector">let</span> icon = overlay.<span class="selector">querySelector</span>(<span class="value">'.feedback-icon'</span>);
+  <span class="selector">if</span> (!icon) {
+    icon = <span class="selector">document.createElement</span>(<span class="value">'i'</span>);
+    icon.<span class="property">className</span> = <span class="value">'feedback-icon'</span>;
+    overlay.<span class="selector">appendChild</span>(icon);
+  }
+  
+  <span class="comment">// Set the icon based on play state</span>
+  icon.<span class="property">className</span> = <span class="value">'feedback-icon '</span> + 
+    (isPlaying ? <span class="value">'ti ti-player-play-filled'</span> : <span class="value">'ti ti-player-pause-filled'</span>);
+  
+  <span class="comment">// Reset and trigger animation</span>
+  icon.<span class="property">classList.remove</span>(<span class="value">'animate'</span>);
+  <span class="selector">void</span> icon.<span class="selector">offsetWidth</span>; <span class="comment">// Trigger reflow</span>
+  icon.<span class="property">classList.add</span>(<span class="value">'animate'</span>);
+}
+
+<span class="selector">showVolumeFeedback</span>(<span class="selector">isMuted</span>) {
+  <span class="comment">// Create or get the feedback overlay</span>
+  <span class="selector">let</span> overlay = <span class="selector">this.elements.player.querySelector</span>(<span class="value">'.playback-feedback-overlay'</span>);
+  
+  <span class="comment">// If overlay doesn't exist, create it</span>
+  <span class="selector">if</span> (!overlay) {
+    overlay = <span class="selector">document.createElement</span>(<span class="value">'div'</span>);
+    overlay.<span class="property">className</span> = <span class="value">'playback-feedback-overlay'</span>;
+    <span class="selector">this.elements.player.appendChild</span>(overlay);
+  }
+  
+  <span class="comment">// Create or get the feedback icon</span>
+  <span class="selector">let</span> icon = overlay.<span class="selector">querySelector</span>(<span class="value">'.feedback-icon'</span>);
+  <span class="selector">if</span> (!icon) {
+    icon = <span class="selector">document.createElement</span>(<span class="value">'i'</span>);
+    icon.<span class="property">className</span> = <span class="value">'feedback-icon'</span>;
+    overlay.<span class="selector">appendChild</span>(icon);
+  }
+  
+  <span class="comment">// Set the icon based on mute state</span>
+  icon.<span class="property">className</span> = <span class="value">'feedback-icon '</span> + 
+    (isMuted ? <span class="value">'ti ti-volume-off'</span> : <span class="value">'ti ti-volume'</span>);
+  
+  <span class="comment">// Reset and trigger animation</span>
+  icon.<span class="property">classList.remove</span>(<span class="value">'animate'</span>);
+  <span class="selector">void</span> icon.<span class="selector">offsetWidth</span>; <span class="comment">// Trigger reflow</span>
+  icon.<span class="property">classList.add</span>(<span class="value">'animate'</span>);
+}</pre>
+    </div>
+    
+    <div class="note">
+      <p><strong>How to integrate:</strong></p>
+      <ol>
+        <li>Add the CSS from the first code block to your main stylesheet</li>
+        <li>Add both JavaScript methods to your VideoPlayerController class</li>
+        <li>Call <code>showPlaybackFeedback(true)</code> when playing and <code>showPlaybackFeedback(false)</code> when pausing</li>
+        <li>Call <code>showVolumeFeedback(true)</code> when muting and <code>showVolumeFeedback(false)</code> when unmuting</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // Demo functionality for the component
+    document.addEventListener('DOMContentLoaded', () => {
+      const playBtn = document.getElementById('playBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const muteBtn = document.getElementById('muteBtn');
+      const unmuteBtn = document.getElementById('unmuteBtn');
+      const feedbackIcon = document.getElementById('feedbackIcon');
+      
+      playBtn.addEventListener('click', () => {
+        feedbackIcon.className = 'feedback-icon ti ti-player-play-filled';
+        feedbackIcon.classList.remove('animate');
+        void feedbackIcon.offsetWidth; // Trigger reflow
+        feedbackIcon.classList.add('animate');
+      });
+      
+      pauseBtn.addEventListener('click', () => {
+        feedbackIcon.className = 'feedback-icon ti ti-player-pause-filled';
+        feedbackIcon.classList.remove('animate');
+        void feedbackIcon.offsetWidth; // Trigger reflow
+        feedbackIcon.classList.add('animate');
+      });
+      
+      muteBtn.addEventListener('click', () => {
+        feedbackIcon.className = 'feedback-icon ti ti-volume-off';
+        feedbackIcon.classList.remove('animate');
+        void feedbackIcon.offsetWidth; // Trigger reflow
+        feedbackIcon.classList.add('animate');
+      });
+      
+      unmuteBtn.addEventListener('click', () => {
+        feedbackIcon.className = 'feedback-icon ti ti-volume';
+        feedbackIcon.classList.remove('animate');
+        void feedbackIcon.offsetWidth; // Trigger reflow
+        feedbackIcon.classList.add('animate');
+      });
+    });
+  </script>
+</body>
+</html>

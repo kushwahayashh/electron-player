@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv D:qwenvideorenderer.js D:qwenvideooldfilesrenderer.js)",
+      "Bash(mv renderer.js oldfiles/)",
+      "Bash(rm -rf D:qwenvideooldfiles)",
+      "Bash(mkdir oldfiles)",
+      "Bash(mv renderer.js previewcanvas.js index.html playback-feedback.html oldfiles/)",
+      "Bash(mkdir -p src/components src/hooks src/styles src/assets)",
+      "Bash(npx tailwindcss init -p)",
+      "Bash(npx tailwindcss init)",
+      "Bash(npx tailwindcss -i ./src/styles/index.css -o ./dist/output.css)",
+      "Bash(taskkill /f /im node.exe)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
