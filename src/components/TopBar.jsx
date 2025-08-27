@@ -32,7 +32,7 @@ const TopBar = ({ title, onBack, onOpenFile, isVisible }) => {
           ref={fileInputRef}
           type="file" 
           id="fileInput" 
-          accept="video/*" 
+          accept=".mp4,.mkv,.avi,.mov,.wmv,.webm,.m4v,.flv,.3gp,video/*" 
           style={{ display: 'none' }} 
           aria-hidden="true" 
           onChange={handleFileChange}

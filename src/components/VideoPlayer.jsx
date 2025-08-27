@@ -3,6 +3,7 @@ import { useVideoPlayer } from '../hooks/useVideoPlayer';
 import TopBar from './TopBar';
 import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
+import { showPlaybackFeedback as showPlaybackFeedbackOverlay, showVolumeFeedback as showVolumeFeedbackOverlay, showSkipFeedback as showSkipFeedbackOverlay } from '../utils/videoFeedback';
 
 const VideoPlayer = () => {
   const {
@@ -69,72 +70,15 @@ const VideoPlayer = () => {
   };
 
   const showPlaybackFeedback = (isPlaying) => {
-    let overlay = document.querySelector('.playback-feedback-overlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'playback-feedback-overlay';
-      playerRef.current?.appendChild(overlay);
-    }
-
-    let icon = overlay.querySelector('.feedback-icon');
-    if (!icon) {
-      icon = document.createElement('i');
-      icon.className = 'feedback-icon';
-      overlay.appendChild(icon);
-    }
-
-    icon.className = `feedback-icon ti ${isPlaying ? 'ti-player-play-filled' : 'ti-player-pause-filled'}`;
-    icon.classList.remove('animate');
-    requestAnimationFrame(() => {
-      icon.classList.add('animate');
-    });
+    return showPlaybackFeedbackOverlay(playerRef.current, isPlaying);
   };
 
   const showVolumeFeedback = (isMuted) => {
-    let overlay = document.querySelector('.playback-feedback-overlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'playback-feedback-overlay';
-      playerRef.current?.appendChild(overlay);
-    }
-
-    let icon = overlay.querySelector('.feedback-icon');
-    if (!icon) {
-      icon = document.createElement('i');
-      icon.className = 'feedback-icon';
-      overlay.appendChild(icon);
-    }
-
-    icon.className = `feedback-icon ti ${isMuted ? 'ti-volume-off' : 'ti-volume'}`;
-    icon.classList.remove('animate');
-    requestAnimationFrame(() => {
-      icon.classList.add('animate');
-    });
+    return showVolumeFeedbackOverlay(playerRef.current, isMuted);
   };
 
   const showSkipFeedback = (isForward) => {
-    // Create separate overlays for left and right feedback
-    const overlayClass = isForward ? 'skip-forward-overlay' : 'skip-backward-overlay';
-    let overlay = document.querySelector(`.${overlayClass}`);
-    
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = overlayClass;
-      playerRef.current?.appendChild(overlay);
-    }
-
-    // Clear previous icons
-    overlay.innerHTML = '';
-
-    const icon = document.createElement('i');
-    icon.className = `skip-feedback-icon ti ${isForward ? 'ti-chevrons-right' : 'ti-chevrons-left'}`;
-    overlay.appendChild(icon);
-
-    // Trigger animation
-    icon.classList.remove('animate');
-    requestAnimationFrame(() => {
-      icon.classList.add('animate');
-    });
+    return showSkipFeedbackOverlay(playerRef.current, isForward);
   };
 
   const handleOpenFile = (file) => {
