@@ -237,7 +237,7 @@ const VideoPlayer = () => {
     <div className="player" id="player" ref={playerRef}>
       <video
         ref={videoRef}
-        className="w-full h-auto max-h-full object-contain"
+        className={`w-full max-h-full ${isFitToScreen ? 'object-cover h-full' : 'object-contain h-auto'}`}
         preload="metadata"
         playsInline
         onClick={() => {

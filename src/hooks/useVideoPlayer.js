@@ -151,7 +151,7 @@ export const useVideoPlayer = () => {
     const video = videoRef.current
     if (!video) return
     
-    // Toggle the CSS classes instead of inline styles for better consistency
+    // Toggle the CSS classes and set height appropriately
     if (video.classList.contains('object-contain')) {
       video.classList.remove('object-contain')
       video.classList.add('object-cover')

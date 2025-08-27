@@ -61,6 +61,10 @@ video {
   background: #000;
 }
 
+video.object-cover {
+  height: 100%;
+}
+
 /* Top bar */
 .topbar {
   position: absolute;
