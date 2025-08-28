@@ -43,13 +43,20 @@
     "appId": "com.yourcompany.videoplayer",
     "productName": "Luna",
     "directories": {
-      "output": "dist"
+      "output": "release"
     },
     "files": [
       "main.js",
       "preload.js",
-      "dist/**/*"
+      "dist/**/*",
+      "!**/*.map",
+      "!oldfiles/**",
+      "!docs/**",
+      "!**/.DS_Store",
+      "!**/Thumbs.db"
     ],
+    "asar": true,
+    "compression": "maximum",
     "win": {
       "target": [
         {
@@ -58,12 +65,7 @@
             "x64"
           ]
         },
-        {
-          "target": "dir",
-          "arch": [
-            "x64"
-          ]
-        }
+        { "target": "portable", "arch": ["x64"] }
       ],
       "icon": "assets/icon.ico"
     },
