@@ -6,7 +6,9 @@ function App() {
   return (
     <div className="wrap">
       <TitleOverlay />
-      <VideoPlayer />
+      <div className="content-area">
+        <VideoPlayer />
+      </div>
     </div>
   )
 }

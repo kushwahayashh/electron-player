@@ -179,9 +179,9 @@ const VideoPlayer = () => {
   return (
     <div className="player" id="player" ref={playerRef}>
       {/* Video title and open file button below the top bar */}
-      <div style={{
+      <div className={`title-bar-overlay ${showControls ? '' : 'hidden'}`} style={{
         position: 'absolute',
-        top: '40px',
+        top: '8px',
         left: '18px',
         right: '18px',
         display: 'flex',
@@ -189,7 +189,8 @@ const VideoPlayer = () => {
         alignItems: 'center',
         zIndex: 10,
         color: 'white',
-        pointerEvents: 'auto'
+        pointerEvents: 'auto',
+        transition: 'opacity var(--transition-fast), transform var(--transition-fast)'
       }}>
         <div className="title" id="title" style={{ fontSize: '16px', fontWeight: '600' }}>
           {videoTitle}
