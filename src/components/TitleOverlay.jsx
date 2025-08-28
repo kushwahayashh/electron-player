@@ -10,9 +10,9 @@ const TitleOverlay = () => {
         display: 'flex',
         alignItems: 'center',
         paddingLeft: 12,
-        color: '#000',
-        background: 'white',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        color: '#fff',
+        background: '#000',
+        borderBottom: '1px solid #333',
         WebkitAppRegion: 'drag',
         userSelect: 'none'
       }}
