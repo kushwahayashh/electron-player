@@ -4,7 +4,7 @@ import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
 import { showPlaybackFeedback as showPlaybackFeedbackOverlay, showVolumeFeedback as showVolumeFeedbackOverlay, showSkipFeedback as showSkipFeedbackOverlay } from '../utils/videoFeedback';
 
-const VideoPlayer = () => {
+const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   const {
     videoRef,
     isPlaying,
@@ -26,7 +26,10 @@ const VideoPlayer = () => {
     formatTime
   } = useVideoPlayer();
 
-  const [videoTitle, setVideoTitle] = useState('Luna');
+  // Expose handleOpenFile method to parent component
+  React.useImperativeHandle(onOpenFileRef, () => ({
+    handleOpenFile
+  }), []);
   const [showControls, setShowControls] = useState(true);
   const [hideTimeout, setHideTimeout] = useState(null);
   const playerRef = useRef(null);
@@ -84,7 +87,7 @@ const VideoPlayer = () => {
     if (file) {
       const url = URL.createObjectURL(file);
       loadVideo(url);
-      setVideoTitle(file.name.replace(/\.[^/.]+$/, ''));
+      onVideoTitleChange(file.name.replace(/\.[^/.]+$/, ''));
       requestAnimationFrame(() => {
         videoRef.current?.play().catch(error => {
           console.log('Autoplay prevented:', error);
@@ -155,7 +158,7 @@ const VideoPlayer = () => {
       loadVideo(filePath);
       const filename = filePath.split(/[\\/]/).pop() || 'Unknown';
       const baseName = filename.replace(/\.[^/.]+$/, '');
-      setVideoTitle(baseName);
+      onVideoTitleChange(baseName);
       requestAnimationFrame(() => {
         videoRef.current?.play().catch(error => {
           console.log('Autoplay prevented:', error);
@@ -178,53 +181,7 @@ const VideoPlayer = () => {
 
   return (
     <div className="player" id="player" ref={playerRef}>
-      {/* Video title and open file button below the top bar */}
-      <div className={`title-bar-overlay ${showControls ? '' : 'hidden'}`} style={{
-        position: 'absolute',
-        top: '8px',
-        left: '18px',
-        right: '18px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        zIndex: 10,
-        color: 'white',
-        pointerEvents: 'auto',
-        transition: 'opacity var(--transition-fast), transform var(--transition-fast)'
-      }}>
-        <div className="title" id="title" style={{ fontSize: '16px', fontWeight: '600' }}>
-          {videoTitle}
-        </div>
-        <button 
-          className="control-btn" 
-          id="openFileBtn" 
-          title="Open Video File" 
-          aria-label="Open video file"
-          onClick={() => {
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput) {
-              fileInput.click();
-            }
-          }}
-        >
-          <i className="ti ti-align-right small-icon"></i>
-        </button>
-        <input 
-          type="file" 
-          id="fileInput" 
-          accept=".mp4,.mkv,.avi,.mov,.wmv,.webm,.m4v,.flv,.3gp,video/*" 
-          style={{ display: 'none' }} 
-          aria-hidden="true"
-          onChange={(e) => {
-            const file = e.target.files[0];
-            if (file) {
-              handleOpenFile(file);
-              // Reset the input value to allow selecting the same file again
-              e.target.value = '';
-            }
-          }}
-        />
-      </div>
+
       <video
         ref={videoRef}
         className={`w-full max-h-full ${isFitToScreen ? 'object-cover h-full' : 'object-contain h-auto'}`}
