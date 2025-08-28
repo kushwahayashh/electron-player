@@ -364,9 +364,7 @@ video.object-cover {
   outline: none;
 }
 
-.volume-slider:hover {
-  height: 10px;
-}
+
 
 .volume-slider::-webkit-slider-runnable-track {
   height: 6px;
@@ -385,10 +383,7 @@ video.object-cover {
   transition: width var(--transition-smooth), height var(--transition-smooth);
 }
 
-.volume-slider:hover::-webkit-slider-thumb {
-  width: 18px;
-  height: 18px;
-}
+
 
 .volume-slider::-moz-range-track {
   height: 6px;

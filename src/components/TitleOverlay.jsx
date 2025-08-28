@@ -1,20 +1,19 @@
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
+import { SUPPORTED_VIDEO_FORMATS, DEFAULTS } from '../utils/constants'
 
 const TitleOverlay = ({ videoTitle, onOpenFile }) => {
   const fileInputRef = useRef(null)
 
-  const handleOpenFile = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click()
-    }
-  }
+  const handleOpenFile = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
 
-  const handleFileChange = (event) => {
+  const handleFileChange = useCallback((event) => {
     const file = event.target.files[0]
     if (file && onOpenFile) {
       onOpenFile(file)
     }
-  }
+  }, [onOpenFile])
 
   return (
     <div
@@ -58,13 +57,13 @@ const TitleOverlay = ({ videoTitle, onOpenFile }) => {
         <input 
           ref={fileInputRef}
           type="file" 
-          accept=".mp4,.mkv,.avi,.mov,.wmv,.webm,.m4v,.flv,.3gp,video/*" 
+          accept={SUPPORTED_VIDEO_FORMATS} 
           style={{ display: 'none' }} 
           aria-hidden="true" 
           onChange={handleFileChange}
         />
         <div className="no-drag app-welcome" style={{ WebkitAppRegion: 'no-drag' }}>
-          {videoTitle || 'Welcome to Luna'}
+          {videoTitle || DEFAULTS.WELCOME_MESSAGE}
         </div>
       </div>
     </div>

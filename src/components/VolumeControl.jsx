@@ -83,7 +83,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute, showVolu
       >
         <div 
           ref={volumeTrackRef}
-          className="volume-slider absolute top-0 left-0 w-full h-1.5 bg-white bg-opacity-10 rounded cursor-pointer transition-height hover:h-2.5"
+          className="volume-slider absolute top-0 left-0 w-full h-1.5 bg-white bg-opacity-10 rounded cursor-pointer"
           onClick={handleVolumeClick}
           onMouseDown={handleVolumeMouseDown}
           onMouseMove={handleVolumeMouseMove}

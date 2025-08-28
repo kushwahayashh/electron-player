@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
+import { DEFAULTS, UI_CONSTANTS } from '../utils/constants'
+import { revokeVideoUrl } from '../utils/fileUtils'
 
 export const useVideoPlayer = () => {
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(0.8)
+  const [volume, setVolume] = useState(DEFAULTS.VOLUME)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [buffered, setBuffered] = useState(0)
   const [isFitToScreen, setIsFitToScreen] = useState(false)
+  const [hasVideo, setHasVideo] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
@@ -17,9 +20,9 @@ export const useVideoPlayer = () => {
 
     let lastUpdateTime = 0
     const updateProgress = () => {
-      // Throttle progress updates to every 100ms to reduce re-renders
+      // Throttle progress updates to reduce re-renders
       const now = Date.now()
-      if (now - lastUpdateTime < 100) {
+      if (now - lastUpdateTime < UI_CONSTANTS.PROGRESS_UPDATE_THROTTLE) {
         return
       }
       lastUpdateTime = now
@@ -173,15 +176,12 @@ export const useVideoPlayer = () => {
     const video = videoRef.current
     if (video) {
       // Revoke previous blob URL if it exists
-      if (video.src && video.src.startsWith('blob:')) {
-        URL.revokeObjectURL(video.src)
-      }
+      revokeVideoUrl(video.src)
       
       video.src = src
       // For MKV files, we need to ensure proper handling
       if (src && typeof src === 'string' && (src.endsWith('.mkv') || src.includes('.mkv'))) {
         console.log('Loading MKV file:', src)
-        // For MKV files, ensure we handle them properly
         video.setAttribute('crossorigin', 'anonymous')
       }
       // Reset playback state
@@ -190,6 +190,8 @@ export const useVideoPlayer = () => {
       video.muted = false
       // Set preload to auto for better loading
       video.preload = 'auto'
+      // Set hasVideo to true when a video is loaded
+      setHasVideo(true)
     }
   }
 
@@ -218,6 +220,7 @@ export const useVideoPlayer = () => {
     isFullscreen,
     buffered,
     isFitToScreen,
+    hasVideo,
 
     // Methods
     togglePlay,
