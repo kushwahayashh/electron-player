@@ -61,6 +61,8 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
         onProgressClick(optimisticPercentage / 100);
       }
       // We don't reset optimisticPercentage here; the useEffect will do it.
+      // Ensure hover preview hides when scrubbing ends outside the bar
+      setHoverTime(null);
     }
   };
 

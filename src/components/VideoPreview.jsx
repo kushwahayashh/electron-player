@@ -34,7 +34,10 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
   useEffect(() => {
     if (hoverTime === null) {
       if (previewCanvasRef.current) {
-        previewCanvasRef.current.style.opacity = '0';
+        const canvas = previewCanvasRef.current;
+        canvas.style.opacity = '0';
+        canvas.style.left = '-9999px';
+        canvas.style.top = '-9999px';
       }
       return;
     }
@@ -75,8 +78,29 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       drawImageWithAspectRatio();
     };
 
+    // Draw when a video frame is ready (more responsive than only relying on 'seeked')
+    const requestFrameDraw = () => {
+      // @ts-ignore - requestVideoFrameCallback not in all TS DOM libs
+      if (typeof previewVideo.requestVideoFrameCallback === 'function') {
+        // @ts-ignore
+        previewVideo.requestVideoFrameCallback(() => {
+          drawImageWithAspectRatio();
+        });
+      }
+    };
+
     previewVideo.addEventListener('seeked', seeked);
-    previewVideo.currentTime = hoverTime;
+    if (typeof previewVideo.fastSeek === 'function') {
+      try {
+        // @ts-ignore - fastSeek is supported on many browsers
+        previewVideo.fastSeek(hoverTime);
+      } catch (_) {
+        previewVideo.currentTime = hoverTime;
+      }
+    } else {
+      previewVideo.currentTime = hoverTime;
+    }
+    requestFrameDraw();
 
     if (progressRef.current && videoRef.current) {
         const progressRect = progressRef.current.getBoundingClientRect();
@@ -103,7 +127,7 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       ref={previewCanvasRef}
       width={PREVIEW_WIDTH}
       height={PREVIEW_HEIGHT}
-      className="fixed z-10 opacity-0 transition-opacity duration-200 pointer-events-none"
+      className="fixed z-10 opacity-0 pointer-events-none"
       style={{
         boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
         border: '2px solid #ccc',
