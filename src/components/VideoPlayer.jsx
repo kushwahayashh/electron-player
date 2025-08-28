@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useVideoPlayer } from '../hooks/useVideoPlayer';
-import TopBar from './TopBar';
 import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
 import { showPlaybackFeedback as showPlaybackFeedbackOverlay, showVolumeFeedback as showVolumeFeedbackOverlay, showSkipFeedback as showSkipFeedbackOverlay } from '../utils/videoFeedback';
@@ -192,13 +191,6 @@ const VideoPlayer = () => {
       />
 
       <div className={`controls-overlay ${showControls ? 'visible' : ''}`} />
-
-      <TopBar 
-        title={videoTitle} 
-        onBack={handleBack}
-        onOpenFile={handleOpenFile}
-        isVisible={showControls}
-      />
 
       <div className={`controls ${showControls ? '' : 'hidden'}`}>
         <ProgressBar

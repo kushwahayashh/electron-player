@@ -65,61 +65,21 @@ video.object-cover {
   height: 100%;
 }
 
-/* Top bar */
-.topbar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  pointer-events: auto;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 100%);
-  color: var(--white);
-  z-index: 10;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+/* Drag regions for custom title bar overlay */
+.drag-region {
+  -webkit-app-region: drag;
+  user-select: none;
 }
 
-.top-left,
-.top-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.no-drag {
+  -webkit-app-region: no-drag;
 }
 
-.back {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: inherit;
-  transition: var(--transition-fast);
-  outline: none;
-}
-
-.back:hover {
-  opacity: 0.7;
-}
-
-.title {
-  font-weight: 600;
-  font-size: 16px;
-  letter-spacing: 0.1px;
-  transition: var(--transition-fast);
-  margin-left: 6px;
-}
-
-.top-hidden {
-  opacity: 0;
-  transform: translateY(-6px);
-  pointer-events: none;
+.app-welcome {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  opacity: 0.85;
+  margin-right: 12px;
 }
 
 /* Controls overlay */

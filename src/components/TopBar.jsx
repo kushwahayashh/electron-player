@@ -17,15 +17,13 @@ const TopBar = ({ title, onBack, onOpenFile, isVisible }) => {
   }
 
   return (
-    <div className={`topbar ${isVisible ? '' : 'top-hidden'}`}>
+    <div className={`topbar drag-region ${isVisible ? '' : 'top-hidden'}`}>
       <div className="top-left">
-        <button className="back" id="backBtn" title="Back" aria-label="Go back" onClick={onBack}>
-          <i className="ti ti-arrow-left small-icon"></i>
-        </button>
+        <div className="app-welcome">Wellcome to Luna</div>
         <div className="title" id="title">{title}</div>
       </div>
       <div className="top-right">
-        <button className="control-btn" id="openFileBtn" title="Open Video File" aria-label="Open video file" onClick={handleOpenFile}>
+        <button className="control-btn no-drag" id="openFileBtn" title="Open Video File" aria-label="Open video file" onClick={handleOpenFile}>
           <i className="ti ti-align-right small-icon"></i>
         </button>
         <input 

@@ -18,8 +18,13 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, 'assets', 'icon.ico'),
-    show: false,
-    titleBarStyle: 'default',
+    show: process.env.NODE_ENV === 'development' ? true : false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#0b0b0b',
+      symbolColor: '#ffffff',
+      height: 32
+    },
     backgroundColor: '#0b0b0b',
     autoHideMenuBar: true,
     menuBarVisible: false,
@@ -31,8 +36,22 @@ function createWindow() {
 
   // Load the app - check if we're in development or production
   if (process.env.NODE_ENV === 'development') {
-    // Load from vite dev server
-    mainWindow.loadURL('http://localhost:3000');
+    // Load from vite dev server with retry (dev server may not be ready yet)
+    const devServerUrl = 'http://localhost:3000';
+    const maxAttempts = 40;
+    const delayMs = 250;
+    let attempts = 0;
+
+    const tryLoad = () => {
+      attempts += 1;
+      mainWindow.loadURL(devServerUrl).catch(() => {
+        if (attempts < maxAttempts) {
+          setTimeout(tryLoad, delayMs);
+        }
+      });
+    };
+
+    tryLoad();
   } else {
     // Load the built React app
     mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
@@ -40,8 +59,10 @@ function createWindow() {
 
   // Show window when ready to prevent visual flash
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    
+    if (!mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+
     // Handle command line arguments (file associations)
     const args = process.argv.slice(1);
     const videoFile = args.find(arg => 
@@ -53,6 +74,21 @@ function createWindow() {
       mainWindow.webContents.send('load-video-file', videoFile);
     }
   });
+
+  // In development, ensure we show the window once content is loaded
+  if (process.env.NODE_ENV === 'development') {
+    const ensureVisible = () => {
+      if (mainWindow && !mainWindow.isVisible()) {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    };
+    mainWindow.webContents.on('did-finish-load', ensureVisible);
+    mainWindow.webContents.on('did-fail-load', () => {
+      // keep the window visible; load will retry via tryLoad
+      ensureVisible();
+    });
+  }
 
   // Handle window closed
   mainWindow.on('closed', () => {
