@@ -178,6 +178,52 @@ const VideoPlayer = () => {
 
   return (
     <div className="player" id="player" ref={playerRef}>
+      {/* Video title and open file button below the top bar */}
+      <div style={{
+        position: 'absolute',
+        top: '40px',
+        left: '18px',
+        right: '18px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        zIndex: 10,
+        color: 'white',
+        pointerEvents: 'auto'
+      }}>
+        <div className="title" id="title" style={{ fontSize: '16px', fontWeight: '600' }}>
+          {videoTitle}
+        </div>
+        <button 
+          className="control-btn" 
+          id="openFileBtn" 
+          title="Open Video File" 
+          aria-label="Open video file"
+          onClick={() => {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+              fileInput.click();
+            }
+          }}
+        >
+          <i className="ti ti-align-right small-icon"></i>
+        </button>
+        <input 
+          type="file" 
+          id="fileInput" 
+          accept=".mp4,.mkv,.avi,.mov,.wmv,.webm,.m4v,.flv,.3gp,video/*" 
+          style={{ display: 'none' }} 
+          aria-hidden="true"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              handleOpenFile(file);
+              // Reset the input value to allow selecting the same file again
+              e.target.value = '';
+            }
+          }}
+        />
+      </div>
       <video
         ref={videoRef}
         className={`w-full max-h-full ${isFitToScreen ? 'object-cover h-full' : 'object-contain h-auto'}`}

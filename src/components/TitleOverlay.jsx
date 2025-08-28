@@ -9,22 +9,24 @@ const TitleOverlay = () => {
         top: 0,
         left: 0,
         height: 32,
-        width: '50%',
+        width: '100%',
         display: 'flex',
         alignItems: 'center',
         paddingLeft: 12,
-        color: '#fff',
+        color: '#000',
         zIndex: 100,
         pointerEvents: 'auto',
         WebkitAppRegion: 'drag',
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)'
+        background: 'white',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
       }}
     >
-      <div className="no-drag app-welcome" style={{ WebkitAppRegion: 'no-drag' }}>Wellcome to Luna</div>
+      <div className="no-drag app-welcome" style={{ WebkitAppRegion: 'no-drag' }}>Welcome to Luna</div>
     </div>
   )
 }
 
 export default TitleOverlay
+
 
 

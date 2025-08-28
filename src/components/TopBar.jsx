@@ -19,11 +19,11 @@ const TopBar = ({ title, onBack, onOpenFile, isVisible }) => {
   return (
     <div className={`topbar drag-region ${isVisible ? '' : 'top-hidden'}`}>
       <div className="top-left">
-        <div className="app-welcome">Wellcome to Luna</div>
+        <div className="app-welcome">Welcome to Luna</div>
         <div className="title" id="title">{title}</div>
       </div>
       <div className="top-right">
-        <button className="control-btn no-drag" id="openFileBtn" title="Open Video File" aria-label="Open video file" onClick={handleOpenFile}>
+        <button className="control-btn no-drag window-control-btn" id="openFileBtn" title="Open Video File" aria-label="Open video file" onClick={handleOpenFile}>
           <i className="ti ti-align-right small-icon"></i>
         </button>
         <input 
