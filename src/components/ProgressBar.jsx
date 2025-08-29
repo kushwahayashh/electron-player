@@ -95,7 +95,8 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       <div className="progress-wrap">
         <div className="time-left">{formatTime(displayTime)}</div>
         <div
-          className="progress-hitbox"
+          ref={progressRef}
+          className="progress relative flex items-center h-2 bg-white bg-opacity-10 rounded cursor-pointer transition-height hover:h-2.5"
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseEnter={handleMouseEnter}
@@ -103,34 +104,29 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
           onMouseLeave={handleMouseLeave}
         >
           <div
-            ref={progressRef}
-            className="progress relative flex items-center h-1 bg-white bg-opacity-10 rounded cursor-pointer transition-height hover:h-1.5"
+            className="buffered absolute left-0 top-0 bottom-0 bg-white bg-opacity-15 rounded"
+            style={{ width: `${bufferedPercentage}%` }}
+          />
+          <div
+            className="filled absolute left-0 top-0 bottom-0 bg-gradient-to-r from-accent to-blue-300 rounded"
+            style={{
+              width: `${displayPercentage}%`,
+              transition: isInteracting ? 'none' : 'width 0.1s linear'
+            }}
+          />
+          <div
+            className="thumb absolute top-1/2 w-3.5 h-3.5 bg-white rounded-full shadow transform -translate-x-1/2 -translate-y-1/2 transition-width-height"
+            style={{
+              left: `${displayPercentage}%`,
+              transition: isInteracting ? 'none' : 'left 0.1s linear'
+            }}
+          />
+          {/* Progress tooltip */}
+          <div 
+            className={`progress-tooltip ${showTooltip && hoverTime !== null ? 'visible' : ''}`}
+            style={{ left: `${tooltipPosition}%` }}
           >
-            <div
-              className="buffered absolute left-0 top-0 bottom-0 bg-white bg-opacity-15 rounded"
-              style={{ width: `${bufferedPercentage}%` }}
-            />
-            <div
-              className="filled absolute left-0 top-0 bottom-0 bg-gradient-to-r from-accent to-blue-300 rounded"
-              style={{
-                width: `${displayPercentage}%`,
-                transition: isInteracting ? 'none' : 'width 0.1s linear'
-              }}
-            />
-            <div
-              className="thumb absolute top-1/2 w-3.5 h-3.5 bg-white rounded-full shadow transform -translate-x-1/2 -translate-y-1/2 transition-width-height"
-              style={{
-                left: `${displayPercentage}%`,
-                transition: isInteracting ? 'none' : 'left 0.1s linear'
-              }}
-            />
-            {/* Progress tooltip */}
-            <div 
-              className={`progress-tooltip ${showTooltip && hoverTime !== null ? 'visible' : ''}`}
-              style={{ left: `${tooltipPosition}%` }}
-            >
-              {hoverTime !== null ? formatTime(hoverTime) : '0:00'}
-            </div>
+            {hoverTime !== null ? formatTime(hoverTime) : '0:00'}
           </div>
         </div>
         <div className="time-right">{formatTime(duration)}</div>

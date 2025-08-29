@@ -172,7 +172,7 @@ video.object-cover {
   position: relative;
   flex: 1;
   height: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 6px;
   cursor: pointer;
   transition: height var(--transition-smooth);
@@ -188,7 +188,7 @@ video.object-cover {
   top: 0;
   bottom: 0;
   width: 0;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.20);
   border-radius: 6px;
   transition: width 0.1s linear;
 }
@@ -348,10 +348,17 @@ video.object-cover {
   gap: 8px;
 }
 
+.volume-hitbox {
+  position: relative;
+  height: 28px; /* enlarged hover area */
+  display: flex;
+  align-items: center;
+}
+
 .volume-slider-container {
   position: relative;
   width: 0;
-  height: 6px;
+  height: 4px;
   opacity: 0;
   transition: all var(--transition-smooth);
   overflow: visible;
@@ -369,8 +376,8 @@ video.object-cover {
   top: 0;
   left: 0;
   width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  height: 4px;
+  background: rgba(255, 255, 255, 0.10); /* match progress base */
   border-radius: 6px;
   cursor: pointer;
   transition: height var(--transition-smooth);
@@ -422,7 +429,7 @@ video.object-cover {
   top: 0;
   bottom: 0;
   width: 80%;
-  background: linear-gradient(90deg, var(--accent), #76b7ff);
+  background: linear-gradient(90deg, var(--accent), #76b7ff); /* match progress filled */
   border-radius: 6px;
   pointer-events: none;
   transition: width 0.06s linear;
