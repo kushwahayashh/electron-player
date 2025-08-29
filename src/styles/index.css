@@ -443,6 +443,46 @@ video.object-cover {
   justify-content: center;
 }
 
+/* Speed dropdown */
+.speed-control {
+  position: relative;
+}
+
+.speed-menu {
+  position: absolute;
+  right: 0;
+  bottom: 48px;
+  min-width: 140px;
+  background: rgba(0, 0, 0, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 20;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+}
+
+.speed-item {
+  width: 100%;
+  text-align: left;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.speed-item:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.speed-item.active {
+  background: linear-gradient(90deg, var(--accent), #76b7ff);
+}
+
 /* Playback Feedback Overlay */
 .playback-feedback-overlay {
   position: absolute;

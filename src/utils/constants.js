@@ -27,3 +27,6 @@ export const DEFAULTS = {
   TITLE: 'Luna',
   WELCOME_MESSAGE: 'Welcome to Luna'
 }
+
+// Playback speed options for the mini menu
+export const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]

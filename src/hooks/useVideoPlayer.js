@@ -13,6 +13,7 @@ export const useVideoPlayer = () => {
   const [buffered, setBuffered] = useState(0)
   const [isFitToScreen, setIsFitToScreen] = useState(false)
   const [hasVideo, setHasVideo] = useState(false)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
   useEffect(() => {
     const video = videoRef.current
@@ -49,8 +50,9 @@ export const useVideoPlayer = () => {
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
 
-    // Set initial volume
+    // Set initial volume and playback rate
     video.volume = volume
+    video.playbackRate = 1
 
     return () => {
       video.removeEventListener('timeupdate', updateProgress)
@@ -150,6 +152,14 @@ export const useVideoPlayer = () => {
     }
   }
 
+  const setVideoPlaybackRate = (rate) => {
+    const video = videoRef.current
+    if (!video) return
+    const safe = Math.max(0.07, Math.min(16, rate))
+    video.playbackRate = safe
+    setPlaybackRate(safe)
+  }
+
   const toggleFitMode = () => {
     const video = videoRef.current
     if (!video) return
@@ -221,6 +231,7 @@ export const useVideoPlayer = () => {
     buffered,
     isFitToScreen,
     hasVideo,
+    playbackRate,
 
     // Methods
     togglePlay,
@@ -232,6 +243,7 @@ export const useVideoPlayer = () => {
     toggleFitMode,
     seekTo,
     loadVideo,
-    formatTime
+    formatTime,
+    setVideoPlaybackRate
   }
 }

@@ -3,7 +3,7 @@ import { useVideoPlayer } from '../hooks/useVideoPlayer';
 import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
 import { showPlaybackFeedback, showVolumeFeedback, showSkipFeedback } from '../utils/videoFeedback';
-import { KEYBOARD_SHORTCUTS, UI_CONSTANTS } from '../utils/constants';
+import { KEYBOARD_SHORTCUTS, UI_CONSTANTS, SPEED_OPTIONS } from '../utils/constants';
 import { extractFileName, createVideoUrl, handleVideoAutoplay } from '../utils/fileUtils';
 
 const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
@@ -26,12 +26,17 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
     toggleFitMode,
     seekTo,
     loadVideo,
-    formatTime
+    formatTime,
+    playbackRate,
+    setVideoPlaybackRate
   } = useVideoPlayer();
 
   const [showControls, setShowControls] = useState(true);
   const [hideTimeout, setHideTimeout] = useState(null);
   const playerRef = useRef(null);
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+  const speedBtnRef = useRef(null);
+  const speedMenuRef = useRef(null);
 
   // Expose handleOpenFile method to parent component
   React.useImperativeHandle(onOpenFileRef, () => ({
@@ -63,6 +68,21 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
       if (hideTimeout) clearTimeout(hideTimeout);
     };
   }, [hideTimeout]);
+
+  // Close speed menu on outside click
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (
+        speedMenuOpen &&
+        !speedBtnRef.current?.contains(e.target) &&
+        !speedMenuRef.current?.contains(e.target)
+      ) {
+        setSpeedMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [speedMenuOpen]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -246,6 +266,36 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
             >
               <i className="ti ti-arrows-maximize small-icon" />
             </button>
+
+            <div className="speed-control relative">
+              <button
+                ref={speedBtnRef}
+                className="control-btn"
+                onClick={() => setSpeedMenuOpen((v) => !v)}
+                title="Playback speed"
+                aria-haspopup="menu"
+                aria-expanded={speedMenuOpen}
+              >
+                <span style={{ fontSize: 16, fontWeight: 700 }}>{`${playbackRate}x`}</span>
+              </button>
+              {speedMenuOpen && (
+                <div ref={speedMenuRef} className="speed-menu" role="menu">
+                  {SPEED_OPTIONS.map((rate) => (
+                    <button
+                      key={rate}
+                      role="menuitem"
+                      className={`speed-item ${rate === playbackRate ? 'active' : ''}`}
+                      onClick={() => {
+                        setVideoPlaybackRate(rate);
+                        setSpeedMenuOpen(false);
+                      }}
+                    >
+                      {rate === 1 ? 'Normal' : `${rate}x`}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button className="control-btn fullscreen-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
               <i className="ti ti-maximize small-icon" />
             </button>

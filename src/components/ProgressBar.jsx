@@ -11,9 +11,11 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
   const isScrubbing = useRef(false);
   const HOVER_PADDING_PX = 16; // increases vertical hover tolerance above/below the bar
 
-  const currentPercentage = duration ? (currentTime / duration) * 100 : 0;
+  const hasValidDuration = duration && isFinite(duration) && duration > 0;
+
+  const currentPercentage = hasValidDuration ? (currentTime / duration) * 100 : 0;
   const displayPercentage = optimisticPercentage !== null ? optimisticPercentage : currentPercentage;
-  const bufferedPercentage = duration ? (buffered / duration) * 100 : 0;
+  const bufferedPercentage = hasValidDuration ? (buffered / duration) * 100 : 0;
 
   // Sync optimistic percentage with real currentTime
   useEffect(() => {
@@ -21,6 +23,11 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       setOptimisticPercentage(null);
     }
   }, [currentTime, optimisticPercentage, currentPercentage]);
+
+  // Reset optimistic percentage when a new video is loaded
+  useEffect(() => {
+    setOptimisticPercentage(null);
+  }, [duration]);
 
   const getRatio = useCallback((e) => {
     if (!progressRef.current) return 0;
@@ -30,9 +37,8 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
   }, []);
 
   const handleMouseMove = useCallback((e) => {
-    if (!duration) return;
     const ratio = getRatio(e);
-    const time = duration * ratio;
+    const time = (duration || 0) * ratio;
     setHoverTime(time);
     setTooltipPosition(ratio * 100);
 
@@ -52,8 +58,10 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
   const handleClick = useCallback((e) => {
     const ratio = getRatio(e);
     setOptimisticPercentage(ratio * 100);
-    onProgressClick(ratio);
-  }, [getRatio, onProgressClick]);
+    if (hasValidDuration) {
+      onProgressClick(ratio);
+    }
+  }, [hasValidDuration, getRatio, onProgressClick]);
 
   const handleScrubStart = useCallback((e) => {
     isScrubbing.current = true;
@@ -64,12 +72,12 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
   const handleScrubEnd = useCallback(() => {
     if (isScrubbing.current) {
       isScrubbing.current = false;
-      if (optimisticPercentage !== null) {
+      if (optimisticPercentage !== null && hasValidDuration) {
         onProgressClick(optimisticPercentage / 100);
       }
       setHoverTime(null);
     }
-  }, [optimisticPercentage, onProgressClick]);
+  }, [optimisticPercentage, onProgressClick, hasValidDuration]);
 
   // Global mouse events for scrubbing and tolerant hover near the bar
   useEffect(() => {
@@ -81,19 +89,15 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       const withinY = e.clientY >= rect.top - HOVER_PADDING_PX && e.clientY <= rect.bottom + HOVER_PADDING_PX;
 
       if (withinX && withinY) {
-        // Keep hover active even if slightly off the thin bar
-        if (duration) {
-          const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-          const time = duration * ratio;
-          setHoverTime(time);
-          setTooltipPosition(ratio * 100);
-          if (isScrubbing.current) {
-            setOptimisticPercentage(ratio * 100);
-          }
-          setShowTooltip(true);
+        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const time = (duration || 0) * ratio;
+        setHoverTime(time);
+        setTooltipPosition(ratio * 100);
+        if (isScrubbing.current) {
+          setOptimisticPercentage(ratio * 100);
         }
+        setShowTooltip(true);
       } else if (!isScrubbing.current) {
-        // Only hide when pointer leaves the tolerant zone and we're not scrubbing
         setHoverTime(null);
         setShowTooltip(false);
       }
@@ -110,10 +114,10 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleScrubEnd);
     };
-  }, [handleMouseMove, handleScrubEnd]);
+  }, [handleMouseMove, handleScrubEnd, duration]);
 
   const isInteracting = optimisticPercentage !== null;
-  const displayTime = isInteracting ? (duration * optimisticPercentage) / 100 : currentTime;
+  const displayTime = isInteracting && hasValidDuration ? (duration * optimisticPercentage) / 100 : currentTime;
 
   return (
     <>
@@ -147,7 +151,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
               className="thumb absolute top-1/2 w-3.5 h-3.5 bg-white rounded-full shadow transform -translate-x-1/2 -translate-y-1/2 transition-width-height"
               style={{
                 left: `${displayPercentage}%`,
-                transition: isInteracting ? 'none' : 'left 0.1s linear'
+                transition: isInteracting ? 'none' : 'left 0.1s linear, width var(--transition-smooth), height var(--transition-smooth)'
               }}
             />
             {/* Progress tooltip */}
