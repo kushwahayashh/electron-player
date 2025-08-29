@@ -145,6 +145,20 @@ video.object-cover {
   gap: 12px;
 }
 
+/* Larger invisible hover/click hitbox for progress bar */
+.progress-hitbox {
+  position: relative;
+  flex: 1;
+  height: 24px; /* enlarged hover area */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.progress-hitbox .progress {
+  width: 100%;
+}
+
 .time-left,
 .time-right {
   font-size: 13px;
@@ -157,7 +171,7 @@ video.object-cover {
 .progress {
   position: relative;
   flex: 1;
-  height: 6px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 6px;
   cursor: pointer;
@@ -165,7 +179,7 @@ video.object-cover {
 }
 
 .progress:hover {
-  height: 10px;
+  height: 6px;
 }
 
 .progress .buffered {
