@@ -4,6 +4,8 @@ import VideoPreview from './VideoPreview';
 const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime }) => {
   const [hoverTime, setHoverTime] = useState(null);
   const [optimisticPercentage, setOptimisticPercentage] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState(0);
   const progressRef = useRef(null);
   const isScrubbing = useRef(false);
 
@@ -30,6 +32,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
     const ratio = getRatio(e);
     const time = duration * ratio;
     setHoverTime(time);
+    setTooltipPosition(ratio * 100);
 
     if (isScrubbing.current) {
       setOptimisticPercentage(ratio * 100);
@@ -38,6 +41,11 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
 
   const handleMouseLeave = useCallback(() => {
     setHoverTime(null);
+    setShowTooltip(false);
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setShowTooltip(true);
   }, []);
 
   const handleClick = useCallback((e) => {
@@ -91,6 +99,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
           className="progress relative flex items-center h-2 bg-white bg-opacity-10 rounded cursor-pointer transition-height hover:h-2.5"
           onClick={handleClick}
           onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
           onMouseDown={handleScrubStart}
           onMouseLeave={handleMouseLeave}
         >
@@ -112,6 +121,13 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
               transition: isInteracting ? 'none' : 'left 0.1s linear'
             }}
           />
+          {/* Progress tooltip */}
+          <div 
+            className={`progress-tooltip ${showTooltip && hoverTime !== null ? 'visible' : ''}`}
+            style={{ left: `${tooltipPosition}%` }}
+          >
+            {hoverTime !== null ? formatTime(hoverTime) : '0:00'}
+          </div>
         </div>
         <div className="time-right">{formatTime(duration)}</div>
       </div>
