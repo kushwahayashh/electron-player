@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import VideoPreview from './VideoPreview';
 
-const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime }) => {
+const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime, previewEnabled = false }) => {
   const [hoverTime, setHoverTime] = useState(null);
   const [optimisticPercentage, setOptimisticPercentage] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -77,7 +77,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       const withinX = e.clientX >= rect.left && e.clientX <= rect.right;
       const withinY = e.clientY >= rect.top - HOVER_PADDING_PX && e.clientY <= rect.bottom + HOVER_PADDING_PX;
 
-      if (withinX && withinY) {
+      if (withinX && withinY && previewEnabled) {
         setShowTooltip(true);
         const ratio = getRatio(e);
         const time = (duration || 0) * ratio;
@@ -96,7 +96,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleScrubEnd);
     };
-  }, [getRatio, handleScrubEnd, duration]);
+  }, [getRatio, handleScrubEnd, duration, previewEnabled]);
 
   const isInteracting = optimisticPercentage !== null;
   const displayTime = isInteracting && hasValidDuration ? (duration * optimisticPercentage) / 100 : currentTime;
