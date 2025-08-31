@@ -34,7 +34,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
   const [showControls, setShowControls] = useState(true);
   const [hideTimeout, setHideTimeout] = useState(null);
-  const [previewEnabled, setPreviewEnabled] = useState(false);
+  const [previewEnabled, setPreviewEnabled] = useState(true);
   const playerRef = useRef(null);
 
   // Expose handleOpenFile method to parent component

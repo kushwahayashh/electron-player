@@ -101,16 +101,6 @@ const SettingsButton = ({ playbackRate, onPlaybackRateChange, videoRef, previewE
       <button
         role="menuitem"
         className="settings-item"
-        onClick={() => handleMenuItemClick('subtitle')}
-      >
-        <i className="ti ti-message-circle" />
-        <span>Subtitles</span>
-        <span className="settings-value">Off</span>
-      </button>
-      
-      <button
-        role="menuitem"
-        className="settings-item"
         onClick={() => handleMenuItemClick('speed')}
       >
         <i className="ti ti-clock" />
