@@ -44,9 +44,18 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
   }, [hasValidDuration, getRatio, onProgressClick]);
 
   const handleScrubStart = useCallback((e) => {
+    // Prefer Pointer Events when available
+    if (e.pointerId !== undefined && e.currentTarget?.setPointerCapture) {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    }
     isScrubbing.current = true;
     const ratio = getRatio(e);
     setOptimisticPercentage(ratio * 100);
+    // Prevent text selection/drag side-effects
+    e.preventDefault?.();
+    e.stopPropagation?.();
   }, [getRatio]);
 
   const handleScrubEnd = useCallback(() => {
@@ -61,7 +70,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
 
   // Handles both scrubbing and hover-with-tolerance
   useEffect(() => {
-    const handleGlobalMouseMove = (e) => {
+    const handleGlobalPointerMove = (e) => {
       if (!progressRef.current) return;
 
       if (isScrubbing.current) {
@@ -89,12 +98,38 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       }
     };
 
-    document.addEventListener('mousemove', handleGlobalMouseMove);
-    document.addEventListener('mouseup', handleScrubEnd);
+    const endScrubSafely = () => handleScrubEnd();
+    const handlePointerCancelOrOut = (e) => {
+      // If pointer left the window (relatedTarget is null) or was canceled, end scrubbing
+      if (isScrubbing.current && (!e.relatedTarget || e.type === 'pointercancel')) {
+        handleScrubEnd();
+      }
+    };
+
+    window.addEventListener('pointermove', handleGlobalPointerMove, { passive: true });
+    window.addEventListener('pointerup', endScrubSafely, { passive: true });
+    window.addEventListener('pointercancel', handlePointerCancelOrOut, { passive: true });
+    window.addEventListener('pointerout', handlePointerCancelOrOut, { passive: true });
+    window.addEventListener('blur', endScrubSafely);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) handleScrubEnd();
+    });
+
+    // Fallback for environments without Pointer Events
+    window.addEventListener('mousemove', handleGlobalPointerMove, { passive: true });
+    window.addEventListener('mouseup', endScrubSafely, { passive: true });
 
     return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleScrubEnd);
+      window.removeEventListener('pointermove', handleGlobalPointerMove);
+      window.removeEventListener('pointerup', endScrubSafely);
+      window.removeEventListener('pointercancel', handlePointerCancelOrOut);
+      window.removeEventListener('pointerout', handlePointerCancelOrOut);
+      window.removeEventListener('blur', endScrubSafely);
+      document.removeEventListener('visibilitychange', () => {
+        if (document.hidden) handleScrubEnd();
+      });
+      window.removeEventListener('mousemove', handleGlobalPointerMove);
+      window.removeEventListener('mouseup', endScrubSafely);
     };
   }, [getRatio, handleScrubEnd, duration, previewEnabled]);
 
@@ -108,7 +143,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
         <div
           className="progress-hitbox"
           onClick={handleClick}
-          onMouseDown={handleScrubStart}
+          onPointerDown={handleScrubStart}
         >
           <div
             ref={progressRef}

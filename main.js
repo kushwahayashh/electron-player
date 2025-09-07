@@ -18,7 +18,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, 'assets', 'icon.ico'),
-    show: process.env.NODE_ENV === 'development' ? true : false,
+    show: true,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#0b0b0b',
