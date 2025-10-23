@@ -37,6 +37,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   const [showControls, setShowControls] = useState(true);
   const [hideTimeout, setHideTimeout] = useState(null);
   const [previewEnabled, setPreviewEnabled] = useState(true);
+  const [isInteracting, setIsInteracting] = useState(false);
   const playerRef = useRef(null);
   const isPlayingRef = useRef(isPlaying);
   const isMutedRef = useRef(isMuted);
@@ -70,8 +71,11 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
       if (hideTimeout) {
         clearTimeout(hideTimeout);
       }
-      const timeout = setTimeout(() => setShowControls(false), UI_CONSTANTS.CONTROLS_HIDE_DELAY);
-      setHideTimeout(timeout);
+      // Don't hide controls if user is interacting (scrubbing)
+      if (!isInteracting) {
+        const timeout = setTimeout(() => setShowControls(false), UI_CONSTANTS.CONTROLS_HIDE_DELAY);
+        setHideTimeout(timeout);
+      }
     };
 
     player.addEventListener('mousemove', handleMouseMove);
@@ -79,7 +83,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
       player.removeEventListener('mousemove', handleMouseMove);
       if (hideTimeout) clearTimeout(hideTimeout);
     };
-  }, [hideTimeout]);
+  }, [hideTimeout, isInteracting]);
 
 
   // Handle keyboard shortcuts
@@ -232,6 +236,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
           onProgressClick={handleProgressClick}
           formatTime={formatTime}
           previewEnabled={previewEnabled}
+          onInteractionChange={setIsInteracting}
         />
 
         <div className="controls-row">
@@ -253,6 +258,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
               isMuted={isMuted}
               onVolumeChange={setVideoVolume}
               onToggleMute={handleVolumeToggle}
+              onInteractionChange={setIsInteracting}
             />
           </div>
 

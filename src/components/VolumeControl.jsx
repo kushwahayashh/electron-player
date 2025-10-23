@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import '../styles/VolumeControl.css'
 
-const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
+const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute, onInteractionChange }) => {
   const [isHovering, setIsHovering] = useState(false)
   const volumeTrackRef = useRef(null)
   const isScrubbing = useRef(false)
@@ -18,6 +18,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
 
   const handleVolumeMouseDown = (e) => {
     isScrubbing.current = true
+    onInteractionChange?.(true)
     setIsHovering(true)
     handleVolumeClick(e)
   }
@@ -34,6 +35,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
 
   const handleVolumeMouseUp = () => {
     isScrubbing.current = false
+    onInteractionChange?.(false)
   }
 
   // Global mouse events for volume scrubbing
@@ -47,6 +49,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
     const handleGlobalMouseUp = () => {
       if (isScrubbing.current) {
         isScrubbing.current = false
+        onInteractionChange?.(false)
         setIsHovering(false)
       }
     }
@@ -62,7 +65,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
       document.removeEventListener('mouseleave', handleGlobalMouseUp)
       window.removeEventListener('blur', handleGlobalMouseUp)
     }
-  }, [])
+  }, [handleVolumeMouseMove, onInteractionChange])
 
   const volumeIcon = isMuted || volume === 0 ? 'ti-volume-off' : 'ti-volume'
   const percentage = volume * 100

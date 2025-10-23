@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import VideoPreview from './VideoPreview';
 import '../styles/ProgressBar.css';
 
-const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime, previewEnabled = false }) => {
+const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime, previewEnabled = false, onInteractionChange }) => {
   const [hoverTime, setHoverTime] = useState(null);
   const [optimisticPercentage, setOptimisticPercentage] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -53,22 +53,24 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       } catch (_) {}
     }
     isScrubbing.current = true;
+    onInteractionChange?.(true);
     const ratio = getRatio(e);
     setOptimisticPercentage(ratio * 100);
     // Prevent text selection/drag side-effects
     e.preventDefault?.();
     e.stopPropagation?.();
-  }, [getRatio]);
+  }, [getRatio, onInteractionChange]);
 
   const handleScrubEnd = useCallback(() => {
     if (isScrubbing.current) {
       isScrubbing.current = false;
+      onInteractionChange?.(false);
       if (optimisticPercentage !== null && hasValidDuration) {
         onProgressClick(optimisticPercentage / 100);
       }
       // After scrubbing, let the optimistic sync handle resetting the percentage
     }
-  }, [optimisticPercentage, onProgressClick, hasValidDuration]);
+  }, [optimisticPercentage, onProgressClick, hasValidDuration, onInteractionChange]);
 
   // Handles both scrubbing and hover-with-tolerance
   useEffect(() => {
