@@ -2,22 +2,57 @@
 
 A modern, professional video player built with Electron, React, Vite, and Tailwind CSS.
 
+![Luna Video Player](assets/image.png)
+
+## Tech Stack
+
+- **Electron 28.0.0** - Desktop application framework
+- **React 18.3.1** - UI library
+- **Vite 4.5.14** - Build tool and dev server
+- **Tailwind CSS 3.4.17** - Utility-first CSS framework
+- **Tabler Icons** - Modern icon set
+- **Space Mono** - Monospace font for professional look
+
 ## Features
 
-- **Modern UI**: Clean, professional interface with Space Mono font
+### Playback Controls
+- **Modern UI**: Clean, professional interface with Space Mono font and smooth animations
+- **Play/Pause**: Instant playback control with visual feedback
+- **Skip Controls**: Jump forward/backward 10 seconds with animated feedback
+- **Playback Speed**: Adjustable playback rate from 0.07x to 16x
+- **Custom Title Bar**: Draggable title bar with integrated open file button
+
+### Progress & Seeking
+- **Interactive Progress Bar**: Click or drag to seek anywhere in the video
+- **Video Preview on Hover**: See frame previews when hovering over the progress bar
+- **Buffering Indicator**: Visual display of buffered video content
+- **Smooth Scrubbing**: Real-time preview while dragging the progress bar
+- **Smart Controls**: Controls stay visible during interaction (no auto-hide while scrubbing)
+
+### Audio & Display
+- **Volume Control**: Expandable volume slider with mute toggle
+- **Visual Feedback**: On-screen icons for mute/unmute, play/pause, and skip actions
+- **Fit-to-Screen Toggle**: Switch between contain and cover display modes
+- **Fullscreen Support**: Seamless fullscreen experience
+
+### File Handling
 - **File Associations**: Automatically opens video files when double-clicked in Windows
-- **Keyboard Shortcuts**: 
-  - Space: Play/Pause
-  - Arrow Keys: Skip forward/backward (10 seconds)
-  - F: Toggle fullscreen
-  - M: Toggle mute
-  - Ctrl+O: Open file
+- **Drag & Drop**: Drop video files directly onto the player
 - **Supported Formats**: MP4, AVI, MKV, MOV, WMV, WebM, M4V, FLV, 3GP, and more
-- **Professional Controls**: Progress scrubbing, volume control, fit-to-screen toggle
-- **Video Preview**: Hover over progress bar to preview video frames
-- **Visual Feedback**: On-screen feedback for playback actions
-- **Custom Title Bar**: Draggable title bar with open file button
+- **Multiple Open Methods**: File menu, keyboard shortcut, or title bar button
+
+### Keyboard Shortcuts
+- **Space**: Play/Pause
+- **Arrow Left/Right**: Skip backward/forward (10 seconds)
+- **F**: Toggle fullscreen
+- **M**: Toggle mute
+- **Ctrl+O**: Open file
+
+### User Experience
+- **Auto-Hide Controls**: Controls fade out during playback (but stay visible during interaction)
 - **Responsive Design**: Adapts to different window sizes
+- **Smooth Animations**: Polished transitions and visual feedback
+- **Settings Menu**: Configure playback rate and preview options
 
 ## Installation & Setup
 
@@ -84,11 +119,12 @@ You can right-click any video file and select "Open with Luna" or set it as the 
 ### Controls
 - **Play/Pause**: Click the play button or press Space
 - **Skip**: Use the skip buttons or arrow keys (10 seconds)
-- **Volume**: Click the volume icon to reveal slider
-- **Progress**: Click anywhere on the progress bar to jump to that position
+- **Volume**: Click the volume icon to reveal expandable slider, drag to adjust
+- **Progress**: Click or drag anywhere on the progress bar to seek
+- **Playback Speed**: Click the settings icon to adjust playback rate (0.07x to 16x)
 - **Fullscreen**: Click fullscreen button or press F
-- **Fit Mode**: Toggle between contain and cover modes
-- **Video Preview**: Hover over progress bar to see video frame preview
+- **Fit Mode**: Toggle between contain and cover modes with the maximize icon
+- **Video Preview**: Hover over progress bar to see frame preview (can be toggled in settings)
 
 ## Development
 
@@ -106,7 +142,8 @@ You can right-click any video file and select "Open with Luna" or set it as the 
 │   │   ├── TitleOverlay.jsx # Title bar component
 │   │   ├── ProgressBar.jsx # Progress bar with preview
 │   │   ├── VolumeControl.jsx # Volume control
-│   │   └── VideoPreview.jsx # Video preview component
+│   │   ├── VideoPreview.jsx # Video preview component
+│   │   └── SettingsButton.jsx # Playback settings menu
 │   ├── hooks/       # Custom React hooks
 │   │   └── useVideoPlayer.js # Video player hook
 │   ├── utils/       # Utility functions
