@@ -1,0 +1,56 @@
+/* Custom CSS classes for Tailwind */
+.from-accent {
+  --tw-gradient-from: var(--accent);
+  --tw-gradient-to: rgb(30 144 255 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-blue-300 {
+  --tw-gradient-to: #93c5fd;
+}
+
+.transition-height {
+  transition: height var(--transition-smooth);
+}
+
+.transition-width-height {
+  transition: width var(--transition-smooth), height var(--transition-smooth);
+}
+
+/* Icon utilities */
+.ti {
+  background: transparent !important;
+  vertical-align: middle;
+  font-size: 24px;
+}
+
+.small-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  opacity: 0.95;
+}
+
+/* Shared control button */
+.control-btn {
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  user-select: none;
+  background: none;
+  transition: var(--transition-fast);
+  transform: scale(1);
+  transform-origin: center;
+  outline: none;
+}
+
+.control-btn:hover {
+  transform: scale(1.15);
+}

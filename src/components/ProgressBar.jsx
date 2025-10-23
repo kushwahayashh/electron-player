@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import VideoPreview from './VideoPreview';
+import '../styles/ProgressBar.css';
 
 const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClick, formatTime, previewEnabled = false }) => {
   const [hoverTime, setHoverTime] = useState(null);
   const [optimisticPercentage, setOptimisticPercentage] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState(0);
+  const [isNearSeekbar, setIsNearSeekbar] = useState(false);
   const progressRef = useRef(null);
   const isScrubbing = useRef(false);
-  const HOVER_PADDING_PX = 16; // increases vertical hover tolerance above/below the bar
+  const HOVER_PADDING_PX = 8; // increases vertical hover tolerance above/below the bar
 
   const hasValidDuration = duration && isFinite(duration) && duration > 0;
 
@@ -86,13 +88,17 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
       const withinX = e.clientX >= rect.left && e.clientX <= rect.right;
       const withinY = e.clientY >= rect.top - HOVER_PADDING_PX && e.clientY <= rect.bottom + HOVER_PADDING_PX;
 
-      if (withinX && withinY && previewEnabled) {
-        setShowTooltip(true);
-        const ratio = getRatio(e);
-        const time = (duration || 0) * ratio;
-        setHoverTime(time);
-        setTooltipPosition(ratio * 100);
+      if (withinX && withinY) {
+        setIsNearSeekbar(true);
+        if (previewEnabled) {
+          setShowTooltip(true);
+          const ratio = getRatio(e);
+          const time = (duration || 0) * ratio;
+          setHoverTime(time);
+          setTooltipPosition(ratio * 100);
+        }
       } else {
+        setIsNearSeekbar(false);
         setShowTooltip(false);
         setHoverTime(null);
       }
@@ -147,14 +153,14 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
         >
           <div
             ref={progressRef}
-            className="progress relative flex items-center h-2 bg-white bg-opacity-10 rounded cursor-pointer transition-height hover:h-2.5"
+            className={`progress relative flex items-center h-2 bg-white bg-opacity-10 cursor-pointer transition-height ${isNearSeekbar ? 'expanded' : ''}`}
           >
             <div
-              className="buffered absolute left-0 top-0 bottom-0 bg-white bg-opacity-15 rounded"
+              className="buffered absolute left-0 top-0 bottom-0 bg-white bg-opacity-15"
               style={{ width: `${bufferedPercentage}%` }}
             />
             <div
-              className="filled absolute left-0 top-0 bottom-0 bg-gradient-to-r from-accent to-blue-300 rounded"
+              className="filled absolute left-0 top-0 bottom-0 bg-gradient-to-r from-accent to-blue-300"
               style={{
                 width: `${displayPercentage}%`,
                 transition: isInteracting ? 'none' : 'width 0.1s linear'

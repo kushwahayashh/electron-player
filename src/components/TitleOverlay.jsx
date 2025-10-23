@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react'
 import { SUPPORTED_VIDEO_FORMATS, DEFAULTS } from '../utils/constants'
+import '../styles/TitleOverlay.css'
 
 const TitleOverlay = ({ videoTitle, onOpenFile }) => {
   const fileInputRef = useRef(null)

@@ -68,6 +68,12 @@ export const useVideoPlayer = () => {
     const video = videoRef.current
     if (!video) return
 
+    // Toggle UI state even without video
+    if (!video.src) {
+      setIsPlaying(!isPlaying)
+      return
+    }
+
     if (video.paused || video.ended) {
       // Try to play unmuted first
       video.play().catch((error) => {
@@ -85,14 +91,14 @@ export const useVideoPlayer = () => {
 
   const skipBackward = (seconds = 10) => {
     const video = videoRef.current
-    if (video) {
+    if (video && video.src) {
       video.currentTime = Math.max(0, video.currentTime - seconds)
     }
   }
 
   const skipForward = (seconds = 10) => {
     const video = videoRef.current
-    if (video) {
+    if (video && video.src) {
       video.currentTime = Math.min(video.duration || Infinity, video.currentTime + seconds)
     }
   }
@@ -100,6 +106,12 @@ export const useVideoPlayer = () => {
   const toggleMute = () => {
     const video = videoRef.current
     if (!video) return
+
+    // Toggle UI state even without video
+    if (!video.src) {
+      setIsMuted(!isMuted)
+      return
+    }
 
     const newMuted = !video.muted
     video.muted = newMuted
@@ -125,7 +137,19 @@ export const useVideoPlayer = () => {
     // Ensure volume is within valid range
     const clampedVolume = Math.max(0, Math.min(1, newVolume))
     
+    // Update UI state even without video
     setVolume(clampedVolume)
+    
+    if (!video.src) {
+      // Just update mute state for UI
+      if (clampedVolume === 0) {
+        setIsMuted(true)
+      } else {
+        setIsMuted(false)
+      }
+      return
+    }
+
     video.volume = clampedVolume
     
     // Only mute if volume is exactly 0
@@ -202,6 +226,10 @@ export const useVideoPlayer = () => {
       video.preload = 'auto'
       // Set hasVideo to true when a video is loaded
       setHasVideo(true)
+      // Sync UI state with video state
+      setIsPlaying(false)
+      setIsMuted(false)
+      video.volume = volume
     }
   }
 

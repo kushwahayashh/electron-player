@@ -6,6 +6,8 @@ import SettingsButton from './SettingsButton';
 import { showPlaybackFeedback, showVolumeFeedback, showSkipFeedback } from '../utils/videoFeedback';
 import { KEYBOARD_SHORTCUTS, UI_CONSTANTS } from '../utils/constants';
 import { extractFileName, createVideoUrl, handleVideoAutoplay } from '../utils/fileUtils';
+import '../styles/VideoPlayer.css';
+import '../styles/feedback.css';
 
 const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   const {
@@ -36,6 +38,17 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   const [hideTimeout, setHideTimeout] = useState(null);
   const [previewEnabled, setPreviewEnabled] = useState(true);
   const playerRef = useRef(null);
+  const isPlayingRef = useRef(isPlaying);
+  const isMutedRef = useRef(isMuted);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
 
   // Expose handleOpenFile method to parent component
   React.useImperativeHandle(onOpenFileRef, () => ({
@@ -78,7 +91,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
         [KEYBOARD_SHORTCUTS.SPACE]: () => {
           e.preventDefault();
           togglePlay();
-          showPlaybackFeedback(playerRef.current, !isPlaying);
+          showPlaybackFeedback(playerRef.current, !isPlayingRef.current);
         },
         [KEYBOARD_SHORTCUTS.ARROW_RIGHT]: () => {
           e.preventDefault();
@@ -94,7 +107,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
         [KEYBOARD_SHORTCUTS.KEY_M]: () => {
           e.preventDefault();
           toggleMute();
-          showVolumeFeedback(playerRef.current, !isMuted);
+          showVolumeFeedback(playerRef.current, !isMutedRef.current);
         }
       };
 
@@ -104,7 +117,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlay, skipForward, skipBackward, toggleFullscreen, toggleMute, isPlaying]);
+  }, [togglePlay, skipForward, skipBackward, toggleFullscreen, toggleMute]);
 
   // Update video fit mode
   useEffect(() => {
@@ -159,8 +172,8 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
   const handlePlayPause = useCallback(() => {
     togglePlay();
-    showPlaybackFeedback(playerRef.current, !isPlaying);
-  }, [togglePlay, isPlaying]);
+    showPlaybackFeedback(playerRef.current, !isPlayingRef.current);
+  }, [togglePlay]);
 
   const handleSkipBackward = useCallback(() => {
     skipBackward(UI_CONSTANTS.SKIP_SECONDS);
@@ -174,8 +187,8 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
   const handleVolumeToggle = useCallback(() => {
     toggleMute();
-    showVolumeFeedback(playerRef.current, !isMuted);
-  }, [toggleMute, isMuted]);
+    showVolumeFeedback(playerRef.current, !isMutedRef.current);
+  }, [toggleMute]);
 
   return (
     <div className="player" id="player" ref={playerRef}>
@@ -240,7 +253,6 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
               isMuted={isMuted}
               onVolumeChange={setVideoVolume}
               onToggleMute={handleVolumeToggle}
-              showVolumeFeedback={showVolumeFeedback}
             />
           </div>
 

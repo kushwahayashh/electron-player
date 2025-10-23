@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
+import '../styles/VolumeControl.css'
 
-const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute, showVolumeFeedback }) => {
+const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute }) => {
   const [isHovering, setIsHovering] = useState(false)
   const volumeTrackRef = useRef(null)
   const isScrubbing = useRef(false)
@@ -72,12 +73,7 @@ const VolumeControl = ({ volume, isMuted, onVolumeChange, onToggleMute, showVolu
     >
       <button 
         className="control-btn" 
-        onClick={() => {
-          onToggleMute()
-          if (showVolumeFeedback) {
-            showVolumeFeedback(!isMuted)
-          }
-        }} 
+        onClick={onToggleMute} 
         title="Mute / Unmute"
       >
         <i className={`ti ${volumeIcon} small-icon`} style={{ display: 'inline-block' }}></i>

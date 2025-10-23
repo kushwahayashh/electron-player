@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SPEED_OPTIONS } from '../utils/constants';
-import './SettingsButton.css';
+import '../styles/SettingsButton.css';
 
 const SettingsButton = ({ playbackRate, onPlaybackRateChange, videoRef, previewEnabled, onPreviewToggle }) => {
   const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);

@@ -1,0 +1,108 @@
+/* Volume controls */
+.volume-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volume-hitbox {
+  position: relative;
+  height: 28px; /* enlarged hover area */
+  display: flex;
+  align-items: center;
+}
+
+.volume-slider-container {
+  position: relative;
+  width: 0;
+  height: 4px;
+  opacity: 0;
+  transition: all var(--transition-smooth);
+  overflow: visible;
+  margin-left: 8px;
+  align-self: center;
+}
+
+.volume-control:hover .volume-slider-container {
+  opacity: 1;
+  width: 110px;
+}
+
+.volume-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: height var(--transition-smooth);
+  appearance: none;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: width var(--transition-smooth), height var(--transition-smooth);
+}
+
+.volume-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 6px;
+  border: none;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--white);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.volume-filled {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 80%;
+  background: linear-gradient(90deg, var(--accent), #76b7ff);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: width 0.06s linear;
+}
+
+/* Decorative knob matching progress thumb */
+.thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  left: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width var(--transition-smooth), height var(--transition-smooth);
+}

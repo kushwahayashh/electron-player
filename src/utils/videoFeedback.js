@@ -35,11 +35,12 @@ export const showPlaybackFeedback = (playerElement, isPlaying) => {
   animateIcon(icon)
 }
 
-export const showVolumeFeedback = (playerElement, isMuted) => {
+export const showVolumeFeedback = (playerElement, willBeMuted) => {
   const overlay = createOverlay(playerElement, 'playback-feedback-overlay')
   const icon = createIcon(overlay)
   
-  icon.className = `feedback-icon ti ${isMuted ? 'ti-volume-off' : 'ti-volume'}`
+  // Show volume-off (muted) icon when muting, volume (unmuted) icon when unmuting
+  icon.className = `feedback-icon ti ${willBeMuted ? 'ti-volume-off' : 'ti-volume'}`
   animateIcon(icon)
 }
 
