@@ -8,7 +8,7 @@
   pointer-events: none;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.4s ease-in-out;
   z-index: 5;
 }
 
@@ -27,7 +27,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
   pointer-events: auto;
   z-index: 10;
 }

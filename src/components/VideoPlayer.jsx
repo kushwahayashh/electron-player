@@ -271,13 +271,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
               <i className="ti ti-arrows-maximize small-icon" />
             </button>
 
-            <SettingsButton 
-              playbackRate={playbackRate}
-              onPlaybackRateChange={setVideoPlaybackRate}
-              videoRef={videoRef}
-              previewEnabled={previewEnabled}
-              onPreviewToggle={setPreviewEnabled}
-            />
+            <SettingsButton />
 
             <button className="control-btn fullscreen-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
               <i className="ti ti-maximize small-icon" />

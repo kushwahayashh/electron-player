@@ -10,7 +10,7 @@
   --white: #fff;
   --control-h: 56px;
   --radius: 10px;
-  --transition-fast: 0.15s ease;
+  --transition-fast: 0.3s ease-in-out;
   --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

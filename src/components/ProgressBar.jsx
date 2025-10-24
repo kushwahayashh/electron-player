@@ -186,7 +186,7 @@ const ProgressBar = ({ videoRef, currentTime, duration, buffered, onProgressClic
         </div>
         <div className="time-right">{formatTime(duration)}</div>
       </div>
-      <VideoPreview videoRef={videoRef} hoverTime={hoverTime} progressRef={progressRef} />
+      {previewEnabled && videoRef.current?.src && <VideoPreview videoRef={videoRef} hoverTime={hoverTime} progressRef={progressRef} />}
     </>
   );
 };
