@@ -50,10 +50,12 @@ const TitleOverlay = ({ videoTitle, onOpenFile }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '16px'
+            fontSize: '20px',
+            width: '28px',
+            height: '28px'
           }}
         >
-          <i className="ti ti-flare-filled small-icon"></i>
+          <i className="ti ti-flare-filled" style={{ fontSize: '20px' }}></i>
         </button>
         <input 
           ref={fileInputRef}

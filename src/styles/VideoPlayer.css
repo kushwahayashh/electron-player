@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 140px;
+  height: 180px;
   pointer-events: none;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
   opacity: 0;
@@ -22,11 +22,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 14px 18px 20px;
+  padding: 6px 24px 10px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0));
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
   pointer-events: auto;
   z-index: 10;
@@ -34,7 +34,7 @@
 
 .controls.hidden {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(10px);
   pointer-events: none;
 }
 
@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 }
 
 .left-controls,
@@ -51,62 +51,71 @@
 .right-controls {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 0px;
 }
 
+/* Base control button - all buttons same size for consistency */
 .control-btn {
-  height: 44px;
-  padding: 0 12px;
+  min-width: 45px;
+  min-height: 45px;
+  width: 45px;
+  height: 45px;
+  padding: 0;
   border: none;
+  border-radius: 8px;
   color: var(--white);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   cursor: pointer;
-  font-size: 15px;
   user-select: none;
   background: none;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
   transform: scale(1);
   transform-origin: center;
   outline: none;
+  flex-shrink: 0;
 }
 
 .control-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.08);
 }
 
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+/* Play/Pause button - larger and more prominent */
 .big-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  font-size: 19px;
-  outline: none;
+  min-width: 55px;
+  min-height: 55px;
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  background: none;
+  margin: 0 4px;
 }
 
-.small-icon {
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  vertical-align: middle;
-  opacity: 0.95;
+.big-btn:hover {
+  transform: scale(1.1);
 }
 
-/* Icon styling */
+/* Icon sizing - all icons same size for consistency */
 .ti {
   background: transparent !important;
   vertical-align: middle;
-  font-size: 24px;
-}
-
-.big-btn .ti {
-  font-size: 28px;
-}
-
-.fullscreen-btn {
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
+  font-size: 35px;
+  line-height: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Remove the small-icon class styling since we're using consistent sizing */
+.small-icon {
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  opacity: 1;
+  font-size: 35px !important;
 }

@@ -214,7 +214,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             color: 'rgba(255, 255, 255, 0.7)',
-            fontSize: '24px',
+            fontSize: '32px',
             fontFamily: '"Space Mono", monospace',
             textAlign: 'center',
             pointerEvents: 'none',

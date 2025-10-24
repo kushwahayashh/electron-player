@@ -1,17 +1,17 @@
 /* Progress area */
 .progress-wrap {
   width: 100%;
-  height: 8px;
+  height: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 /* Larger invisible hover/click hitbox for progress bar */
 .progress-hitbox {
   position: relative;
   flex: 1;
-  height: 24px; /* enlarged hover area */
+  height: 32px; /* enlarged hover area */
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -23,17 +23,17 @@
 
 .time-left,
 .time-right {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--white);
   font-weight: 700;
-  min-width: 48px;
+  min-width: 60px;
   text-align: center;
 }
 
 .progress {
   position: relative;
   flex: 1;
-  height: 4px !important;
+  height: 6px !important;
   background: rgba(255, 255, 255, 0.10);
   cursor: pointer;
   transition: height var(--transition-smooth);
@@ -41,7 +41,7 @@
 
 .progress:hover,
 .progress.expanded {
-  height: 8px !important;
+  height: 10px !important;
 }
 
 .progress .buffered {
@@ -68,8 +68,8 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--white);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
@@ -83,8 +83,8 @@
 
 .thumb::after {
   content: "";
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--white);
   display: block;
@@ -100,15 +100,15 @@
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.9);
   color: var(--white);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transition: opacity var(--transition-fast);
-  margin-top: 8px;
+  margin-top: 10px;
   z-index: 15;
 }
 
@@ -122,6 +122,6 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 4px solid transparent;
+  border: 5px solid transparent;
   border-bottom-color: rgba(0, 0, 0, 0.9);
 }
