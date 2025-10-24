@@ -48,10 +48,7 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       
       isVisibleRef.current = false;
       if (previewCanvasRef.current) {
-        const canvas = previewCanvasRef.current;
-        canvas.style.opacity = '0';
-        canvas.style.left = '-9999px';
-        canvas.style.top = '-9999px';
+        previewCanvasRef.current.style.opacity = '0';
       }
     };
 
@@ -166,6 +163,7 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       style={{
         boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
         border: '2px solid #ccc',
+        transition: 'opacity 0.2s ease-in-out',
       }}
     />
   );
