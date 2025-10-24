@@ -3,10 +3,14 @@ import React, { useRef, useEffect } from 'react';
 
 const PREVIEW_WIDTH = 320;
 const PREVIEW_HEIGHT = 180;
+const PREVIEW_DELAY_MS = 250;
+const PREVIEW_OFFSET_Y = 10;
 
 const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
   const previewCanvasRef = useRef(null);
   const previewVideoRef = useRef(null);
+  const delayTimerRef = useRef(null);
+  const isVisibleRef = useRef(false);
 
   useEffect(() => {
     const previewVideo = document.createElement('video');
@@ -31,19 +35,36 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
     }
   }, [videoRef.current?.src]);
 
+  // Main effect: handles preview display with initial delay to prevent flicker
+  // - First hover: 250ms delay before showing
+  // - Once visible: updates immediately as cursor moves
+  // - On leave: hides instantly and resets for next hover
   useEffect(() => {
-    if (hoverTime === null) {
+    const hidePreview = () => {
+      if (delayTimerRef.current) {
+        clearTimeout(delayTimerRef.current);
+        delayTimerRef.current = null;
+      }
+      
+      isVisibleRef.current = false;
       if (previewCanvasRef.current) {
         const canvas = previewCanvasRef.current;
         canvas.style.opacity = '0';
         canvas.style.left = '-9999px';
         canvas.style.top = '-9999px';
       }
+    };
+
+    if (hoverTime === null) {
+      hidePreview();
       return;
     }
 
     const previewVideo = previewVideoRef.current;
     const previewCanvas = previewCanvasRef.current;
+    
+    if (!previewVideo || !previewCanvas) return;
+    
     const ctx = previewCanvas.getContext('2d');
 
     const drawImageWithAspectRatio = () => {
@@ -71,7 +92,10 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       }
 
       ctx.drawImage(previewVideo, x, y, drawWidth, drawHeight);
-      previewCanvas.style.opacity = '1';
+      
+      if (isVisibleRef.current) {
+        previewCanvas.style.opacity = '1';
+      }
     };
 
     const seeked = () => {
@@ -89,33 +113,44 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       }
     };
 
+    const updatePreviewPosition = () => {
+      if (!progressRef.current || !videoRef.current) return;
+      
+      const progressRect = progressRef.current.getBoundingClientRect();
+      const hoverRatio = hoverTime / videoRef.current.duration;
+      const centerX = progressRect.left + progressRect.width * hoverRatio;
+      
+      let left = centerX - PREVIEW_WIDTH / 2;
+      left = Math.max(0, Math.min(left, window.innerWidth - PREVIEW_WIDTH));
+
+      previewCanvas.style.left = `${left}px`;
+      previewCanvas.style.top = `${progressRect.top - PREVIEW_HEIGHT - PREVIEW_OFFSET_Y}px`;
+    };
+
+    if (!isVisibleRef.current && !delayTimerRef.current) {
+      delayTimerRef.current = setTimeout(() => {
+        isVisibleRef.current = true;
+        delayTimerRef.current = null;
+        if (previewCanvasRef.current) {
+          previewCanvasRef.current.style.opacity = '1';
+        }
+      }, PREVIEW_DELAY_MS);
+    }
+
+    updatePreviewPosition();
     previewVideo.addEventListener('seeked', seeked);
-    if (typeof previewVideo.fastSeek === 'function') {
-      try {
-        // @ts-ignore - fastSeek is supported on many browsers
+    
+    try {
+      if (typeof previewVideo.fastSeek === 'function') {
         previewVideo.fastSeek(hoverTime);
-      } catch (_) {
+      } else {
         previewVideo.currentTime = hoverTime;
       }
-    } else {
+    } catch {
       previewVideo.currentTime = hoverTime;
     }
+    
     requestFrameDraw();
-
-    if (progressRef.current && videoRef.current) {
-        const progressRect = progressRef.current.getBoundingClientRect();
-        const hoverRatio = hoverTime / videoRef.current.duration;
-        const tooltipLeft = progressRect.left + progressRect.width * hoverRatio;
-        
-        let left = tooltipLeft - PREVIEW_WIDTH / 2;
-        if (left < 0) left = 0;
-        if (left + PREVIEW_WIDTH > window.innerWidth) {
-          left = window.innerWidth - PREVIEW_WIDTH;
-        }
-
-        previewCanvas.style.left = `${left}px`;
-        previewCanvas.style.top = `${progressRect.top - PREVIEW_HEIGHT - 10}px`;
-    }
 
     return () => {
       previewVideo.removeEventListener('seeked', seeked);
