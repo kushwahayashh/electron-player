@@ -41,6 +41,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   const playerRef = useRef(null);
   const isPlayingRef = useRef(isPlaying);
   const isMutedRef = useRef(isMuted);
+  const clickTimeout = useRef(null);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -50,6 +51,15 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
   useEffect(() => {
     isMutedRef.current = isMuted;
   }, [isMuted]);
+
+  // Cleanup click timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimeout.current) {
+        clearTimeout(clickTimeout.current);
+      }
+    };
+  }, []);
 
   // Expose handleOpenFile method to parent component
   React.useImperativeHandle(onOpenFileRef, () => ({
@@ -194,6 +204,22 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
     showVolumeFeedback(playerRef.current, !isMutedRef.current);
   }, [toggleMute]);
 
+  // Handle video click - single click for play/pause, double click for fullscreen
+  const handleVideoClick = useCallback((e) => {
+    if (clickTimeout.current) {
+      // Double click detected
+      clearTimeout(clickTimeout.current);
+      clickTimeout.current = null;
+      toggleFullscreen();
+    } else {
+      // Wait to see if it's a double click
+      clickTimeout.current = setTimeout(() => {
+        clickTimeout.current = null;
+        handlePlayPause();
+      }, 250); // 250ms delay to detect double click
+    }
+  }, [toggleFullscreen, handlePlayPause]);
+
   return (
     <div className="player" id="player" ref={playerRef}>
       <video
@@ -201,7 +227,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
         className={`w-full max-h-full ${isFitToScreen ? 'object-cover h-full' : 'object-contain h-auto'}`}
         preload="metadata"
         playsInline
-        onClick={handlePlayPause}
+        onClick={handleVideoClick}
         onContextMenu={(e) => e.preventDefault()}
       />
 
