@@ -117,8 +117,15 @@ const VideoPreview = ({ videoRef, hoverTime, progressRef }) => {
       const hoverRatio = hoverTime / videoRef.current.duration;
       const centerX = progressRect.left + progressRect.width * hoverRatio;
       
+      // Calculate left position, centered on cursor
       let left = centerX - PREVIEW_WIDTH / 2;
-      left = Math.max(0, Math.min(left, window.innerWidth - PREVIEW_WIDTH));
+      
+      // Add padding from edges (10px)
+      const edgePadding = 10;
+      const maxLeft = window.innerWidth - PREVIEW_WIDTH - edgePadding;
+      
+      // Clamp to viewport with padding
+      left = Math.max(edgePadding, Math.min(left, maxLeft));
 
       previewCanvas.style.left = `${left}px`;
       previewCanvas.style.top = `${progressRect.top - PREVIEW_HEIGHT - PREVIEW_OFFSET_Y}px`;
