@@ -15,9 +15,9 @@ function App() {
 
   return (
     <div className="wrap">
-      <TitleOverlay videoTitle={videoTitle} onOpenFile={handleOpenFile} />
+      <TitleOverlay onOpenFile={handleOpenFile} />
       <div className="content-area">
-        <VideoPlayer onVideoTitleChange={setVideoTitle} onOpenFileRef={videoPlayerRef} />
+        <VideoPlayer videoTitle={videoTitle} onVideoTitleChange={setVideoTitle} onOpenFileRef={videoPlayerRef} />
       </div>
     </div>
   )

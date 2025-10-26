@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react'
 import { SUPPORTED_VIDEO_FORMATS, DEFAULTS } from '../utils/constants'
 import '../styles/TitleOverlay.css'
 
-const TitleOverlay = ({ videoTitle, onOpenFile }) => {
+const TitleOverlay = ({ onOpenFile }) => {
   const fileInputRef = useRef(null)
 
   const handleOpenFile = useCallback(() => {
@@ -15,6 +15,20 @@ const TitleOverlay = ({ videoTitle, onOpenFile }) => {
       onOpenFile(file)
     }
   }, [onOpenFile])
+
+  const handleMute = useCallback(() => {
+    // Toggle mute via keyboard shortcut simulation or direct call
+    const event = new KeyboardEvent('keydown', { code: 'KeyM' })
+    document.dispatchEvent(event)
+  }, [])
+
+  const handleExit = useCallback(() => {
+    if (window.electronAPI?.closeWindow) {
+      window.electronAPI.closeWindow()
+    } else {
+      window.close()
+    }
+  }, [])
 
   return (
     <div
@@ -34,29 +48,7 @@ const TitleOverlay = ({ videoTitle, onOpenFile }) => {
         userSelect: 'none'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <button 
-          className="control-btn no-drag window-control-btn" 
-          title="Open Video File" 
-          aria-label="Open video file" 
-          onClick={handleOpenFile}
-          style={{
-            WebkitAppRegion: 'no-drag',
-            background: 'transparent',
-            border: 'none',
-            color: '#fff',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '20px',
-            width: '28px',
-            height: '28px'
-          }}
-        >
-          <i className="ti ti-flare-filled" style={{ fontSize: '20px' }}></i>
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <input 
           ref={fileInputRef}
           type="file" 
@@ -65,9 +57,30 @@ const TitleOverlay = ({ videoTitle, onOpenFile }) => {
           aria-hidden="true" 
           onChange={handleFileChange}
         />
-        <div className="no-drag app-welcome" style={{ WebkitAppRegion: 'no-drag' }}>
-          {videoTitle || DEFAULTS.WELCOME_MESSAGE}
-        </div>
+        <button
+          className="no-drag title-text-btn"
+          onClick={handleOpenFile}
+          style={{ WebkitAppRegion: 'no-drag' }}
+        >
+          <i className="ti ti-folder" />
+          Open File
+        </button>
+        <button
+          className="no-drag title-text-btn"
+          onClick={handleMute}
+          style={{ WebkitAppRegion: 'no-drag' }}
+        >
+          <i className="ti ti-volume" />
+          Mute
+        </button>
+        <button
+          className="no-drag title-text-btn"
+          onClick={handleExit}
+          style={{ WebkitAppRegion: 'no-drag' }}
+        >
+          <i className="ti ti-x" />
+          Exit
+        </button>
       </div>
     </div>
   )

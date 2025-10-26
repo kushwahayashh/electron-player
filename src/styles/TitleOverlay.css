@@ -41,6 +41,43 @@
   height: 100%;
 }
 
+/* Star icon next to app name */
+.title-star {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+}
+
+.title-star .ti {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Text buttons in the title bar */
+.title-text-btn {
+  -webkit-app-region: no-drag;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px;
+  text-decoration: none;
+}
+
+.title-text-btn:hover {
+  color: #fff;
+}
+
+.title-text-btn .ti {
+  font-size: 16px;
+  line-height: 1;
+}
+
 .title {
   font-weight: 600;
   font-size: 16px;

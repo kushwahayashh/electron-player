@@ -9,7 +9,7 @@ import { extractFileName, createVideoUrl, handleVideoAutoplay } from '../utils/f
 import '../styles/VideoPlayer.css';
 import '../styles/feedback.css';
 
-const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
+const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
   const {
     videoRef,
     isPlaying,
@@ -17,6 +17,7 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
     duration,
     volume,
     isMuted,
+    isFullscreen,
     buffered,
     isFitToScreen,
     hasVideo,
@@ -220,6 +221,12 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
     }
   }, [toggleFullscreen, handlePlayPause]);
 
+  const handleExitFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      toggleFullscreen();
+    }
+  }, [toggleFullscreen]);
+
   return (
     <div className="player" id="player" ref={playerRef}>
       <video
@@ -253,6 +260,15 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
       <div className={`controls-overlay ${showControls ? 'is-visible' : ''}`} />
 
+      {hasVideo && videoTitle && (
+        <div className={`controls-title ${showControls ? '' : 'is-hidden'}`}>
+          <button className="control-btn title-exit-btn" onClick={handleExitFullscreen} aria-label="Exit fullscreen">
+            <i className="ti ti-arrow-left" />
+          </button>
+          <span className="controls-title-text">{videoTitle}</span>
+        </div>
+      )}
+
       <div className={`controls ${showControls ? '' : 'is-hidden'}`}>
         <ProgressBar
           videoRef={videoRef}
@@ -267,15 +283,15 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
 
         <div className="controls-row">
           <div className="left-controls">
-            <button className="control-btn" onClick={handleSkipBackward} title={`Back ${UI_CONSTANTS.SKIP_SECONDS}s`}>
+            <button className="control-btn" onClick={handleSkipBackward}>
               <i className="ti ti-chevrons-left small-icon" />
             </button>
 
-            <button className="control-btn big-btn" onClick={handlePlayPause} title="Play / Pause">
+            <button className="control-btn big-btn" onClick={handlePlayPause}>
               <i className={`ti ${isPlaying ? 'ti-player-pause-filled' : 'ti-player-play-filled'} small-icon`} />
             </button>
 
-            <button className="control-btn" onClick={handleSkipForward} title={`Forward ${UI_CONSTANTS.SKIP_SECONDS}s`}>
+            <button className="control-btn" onClick={handleSkipForward}>
               <i className="ti ti-chevrons-right small-icon" />
             </button>
 
@@ -292,14 +308,13 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
             <button 
               className="control-btn"
               onClick={toggleFitMode}
-              title="Toggle Fit to Screen"
             >
               <i className="ti ti-arrows-maximize small-icon" />
             </button>
 
             <SettingsButton />
 
-            <button className="control-btn fullscreen-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
+            <button className="control-btn fullscreen-btn" onClick={toggleFullscreen}>
               <i className="ti ti-maximize small-icon" />
             </button>
           </div>

@@ -31,7 +31,6 @@ const VolumeControl = ({ volume, isMuted, onToggleMute, onVolumeChange, onIntera
       <button 
         className="control-btn" 
         onClick={onToggleMute} 
-        title={isMuted ? 'Unmute' : 'Mute'}
       >
         <i className={`ti ${getVolumeIcon()} small-icon`}></i>
       </button>
