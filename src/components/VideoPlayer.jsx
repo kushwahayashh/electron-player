@@ -251,9 +251,9 @@ const VideoPlayer = ({ onVideoTitleChange, onOpenFileRef }) => {
         </div>
       )}
 
-      <div className={`controls-overlay ${showControls ? 'visible' : ''}`} />
+      <div className={`controls-overlay ${showControls ? 'is-visible' : ''}`} />
 
-      <div className={`controls ${showControls ? '' : 'hidden'}`}>
+      <div className={`controls ${showControls ? '' : 'is-hidden'}`}>
         <ProgressBar
           videoRef={videoRef}
           currentTime={currentTime}
