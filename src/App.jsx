@@ -13,9 +13,15 @@ function App() {
     }
   }, [])
 
+  const handleOpenUrl = useCallback((url) => {
+    if (videoPlayerRef.current?.handleOpenUrl) {
+      videoPlayerRef.current.handleOpenUrl(url)
+    }
+  }, [])
+
   return (
     <div className="wrap">
-      <TitleOverlay onOpenFile={handleOpenFile} />
+      <TitleOverlay onOpenFile={handleOpenFile} onOpenUrl={handleOpenUrl} />
       <div className="content-area">
         <VideoPlayer videoTitle={videoTitle} onVideoTitleChange={setVideoTitle} onOpenFileRef={videoPlayerRef} />
       </div>

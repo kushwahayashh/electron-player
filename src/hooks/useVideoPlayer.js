@@ -212,12 +212,17 @@ export const useVideoPlayer = () => {
       // Revoke previous blob URL if it exists
       revokeVideoUrl(video.src)
       
-      video.src = src
+      // For URL videos (http/https), set crossorigin to handle CORS
+      if (src && typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'))) {
+        video.setAttribute('crossorigin', 'anonymous')
+      }
       // For MKV files, we need to ensure proper handling
-      if (src && typeof src === 'string' && (src.endsWith('.mkv') || src.includes('.mkv'))) {
+      else if (src && typeof src === 'string' && (src.endsWith('.mkv') || src.includes('.mkv'))) {
         console.log('Loading MKV file:', src)
         video.setAttribute('crossorigin', 'anonymous')
       }
+      
+      video.src = src
       // Reset playback state
       video.load()
       // Ensure video is not muted by default unless needed

@@ -62,10 +62,25 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
     };
   }, []);
 
-  // Expose handleOpenFile method to parent component
-  React.useImperativeHandle(onOpenFileRef, () => ({
-    handleOpenFile
-  }), []);
+  const handleOpenUrl = useCallback((url) => {
+    if (url) {
+      loadVideo(url);
+      // Extract filename from URL or use a default title
+      try {
+        const urlObj = new URL(url);
+        const pathname = urlObj.pathname;
+        const filename = pathname.substring(pathname.lastIndexOf('/') + 1) || 'Online Video';
+        onVideoTitleChange(filename.replace(/\.[^/.]+$/, ''));
+      } catch (e) {
+        onVideoTitleChange('Online Video');
+      }
+      requestAnimationFrame(() => {
+        if (videoRef.current) {
+          handleVideoAutoplay(videoRef.current);
+        }
+      });
+    }
+  }, [loadVideo, onVideoTitleChange]);
 
   // Handle mouse movement to show/hide controls
   useEffect(() => {
@@ -184,6 +199,12 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
       });
     }
   }, [loadVideo, onVideoTitleChange]);
+
+  // Expose handleOpenFile and handleOpenUrl methods to parent component
+  React.useImperativeHandle(onOpenFileRef, () => ({
+    handleOpenFile,
+    handleOpenUrl
+  }), [handleOpenFile, handleOpenUrl]);
 
   const handlePlayPause = useCallback(() => {
     togglePlay();

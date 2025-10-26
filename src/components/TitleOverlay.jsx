@@ -1,9 +1,11 @@
-import React, { useRef, useCallback } from 'react'
+import React, { useRef, useCallback, useState } from 'react'
 import { SUPPORTED_VIDEO_FORMATS, DEFAULTS } from '../utils/constants'
+import UrlModal from './UrlModal'
 import '../styles/TitleOverlay.css'
 
-const TitleOverlay = ({ onOpenFile }) => {
+const TitleOverlay = ({ onOpenFile, onOpenUrl }) => {
   const fileInputRef = useRef(null)
+  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
 
   const handleOpenFile = useCallback(() => {
     fileInputRef.current?.click()
@@ -29,6 +31,20 @@ const TitleOverlay = ({ onOpenFile }) => {
       window.close()
     }
   }, [])
+
+  const handleOpenUrlModal = useCallback(() => {
+    setIsUrlModalOpen(true)
+  }, [])
+
+  const handleCloseUrlModal = useCallback(() => {
+    setIsUrlModalOpen(false)
+  }, [])
+
+  const handleUrlSubmit = useCallback((url) => {
+    if (onOpenUrl) {
+      onOpenUrl(url)
+    }
+  }, [onOpenUrl])
 
   return (
     <div
@@ -67,6 +83,14 @@ const TitleOverlay = ({ onOpenFile }) => {
         </button>
         <button
           className="no-drag title-text-btn"
+          onClick={handleOpenUrlModal}
+          style={{ WebkitAppRegion: 'no-drag' }}
+        >
+          <i className="ti ti-link" />
+          Play URL
+        </button>
+        <button
+          className="no-drag title-text-btn"
           onClick={handleMute}
           style={{ WebkitAppRegion: 'no-drag' }}
         >
@@ -82,6 +106,11 @@ const TitleOverlay = ({ onOpenFile }) => {
           Exit
         </button>
       </div>
+      <UrlModal 
+        isOpen={isUrlModalOpen}
+        onClose={handleCloseUrlModal}
+        onSubmit={handleUrlSubmit}
+      />
     </div>
   )
 }
