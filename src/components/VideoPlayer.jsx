@@ -259,6 +259,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
       )}
 
       <div className={`controls-overlay ${showControls ? 'is-visible' : ''}`} />
+      <div className={`title-overlay ${showControls ? 'is-visible' : ''}`} />
 
       {hasVideo && videoTitle && (
         <div className={`controls-title ${showControls ? '' : 'is-hidden'}`}>

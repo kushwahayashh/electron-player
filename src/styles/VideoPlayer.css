@@ -16,6 +16,24 @@
   opacity: 1;
 }
 
+/* Title overlay gradient */
+.title-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 120px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+  z-index: 5;
+}
+
+.title-overlay.is-visible {
+  opacity: 1;
+}
+
 /* Controls container */
 .controls {
   position: absolute;
@@ -57,7 +75,7 @@
 .controls-title {
   position: absolute;
   left: 24px;
-  top: 24px;
+  top: 16px;
   color: rgba(255, 255, 255, 0.95);
   font-size: 22px;
   font-weight: 700;
