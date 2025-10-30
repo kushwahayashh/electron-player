@@ -3,8 +3,10 @@ import { useVideoPlayer } from '../hooks/useVideoPlayer';
 import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
 import SettingsButton from './SettingsButton';
+import ContextMenu from './ContextMenu';
+import UrlModal from './UrlModal';
 import { showPlaybackFeedback, showVolumeFeedback, showSkipFeedback } from '../utils/videoFeedback';
-import { KEYBOARD_SHORTCUTS, UI_CONSTANTS } from '../utils/constants';
+import { KEYBOARD_SHORTCUTS, UI_CONSTANTS, SUPPORTED_VIDEO_FORMATS } from '../utils/constants';
 import { extractFileName, createVideoUrl, handleVideoAutoplay } from '../utils/fileUtils';
 import '../styles/VideoPlayer.css';
 import '../styles/feedback.css';
@@ -39,10 +41,14 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
   const [hideTimeout, setHideTimeout] = useState(null);
   const [previewEnabled, setPreviewEnabled] = useState(true);
   const [isInteracting, setIsInteracting] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
+  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const playerRef = useRef(null);
+  const fileInputRef = useRef(null);
   const isPlayingRef = useRef(isPlaying);
   const isMutedRef = useRef(isMuted);
   const clickTimeout = useRef(null);
+  const contextMenuClosingRef = useRef(false);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -228,6 +234,12 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
 
   // Handle video click - single click for play/pause, double click for fullscreen
   const handleVideoClick = useCallback((e) => {
+    // Ignore clicks if context menu is closing
+    if (contextMenuClosingRef.current) {
+      contextMenuClosingRef.current = false;
+      return;
+    }
+
     if (clickTimeout.current) {
       // Double click detected
       clearTimeout(clickTimeout.current);
@@ -248,15 +260,83 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
     }
   }, [toggleFullscreen]);
 
+  const handleContextMenu = useCallback((e) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }, []);
+
+  const handleCloseContextMenu = useCallback(() => {
+    contextMenuClosingRef.current = true;
+    setContextMenu(null);
+    // Reset the flag after a short delay
+    setTimeout(() => {
+      contextMenuClosingRef.current = false;
+    }, 100);
+  }, []);
+
+  // Context menu action handlers
+  const handleOpenFileFromContext = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileInputChange = useCallback((event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleOpenFile(file);
+    }
+  }, [handleOpenFile]);
+
+  const handleOpenUrlFromContext = useCallback(() => {
+    setIsUrlModalOpen(true);
+  }, []);
+
+  const handleCloseUrlModal = useCallback(() => {
+    setIsUrlModalOpen(false);
+  }, []);
+
+  const handleUrlSubmit = useCallback((url) => {
+    if (url) {
+      handleOpenUrl(url);
+    }
+  }, [handleOpenUrl]);
+
+  const contextMenuActions = {
+    'play-pause': handlePlayPause,
+    'open-file': handleOpenFileFromContext,
+    'open-url': handleOpenUrlFromContext,
+    'fullscreen': toggleFullscreen,
+    'fit-screen': toggleFitMode,
+    'playback-speed': () => {
+      // This will be handled by submenu later
+      console.log('Playback speed submenu');
+    },
+    'settings': () => {
+      // Settings action - can be implemented later
+      console.log('Settings clicked');
+    },
+  };
+
   return (
     <div className="player" id="player" ref={playerRef}>
+      <input 
+        ref={fileInputRef}
+        type="file" 
+        accept={SUPPORTED_VIDEO_FORMATS} 
+        style={{ display: 'none' }} 
+        aria-hidden="true" 
+        onChange={handleFileInputChange}
+      />
+      
       <video
         ref={videoRef}
         className={`w-full max-h-full ${isFitToScreen ? 'object-cover h-full' : 'object-contain h-auto'}`}
         preload="metadata"
         playsInline
         onClick={handleVideoClick}
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={handleContextMenu}
       />
 
       {!hasVideo && (
@@ -342,6 +422,21 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
           </div>
         </div>
       </div>
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={handleCloseContextMenu}
+          actions={contextMenuActions}
+        />
+      )}
+
+      <UrlModal 
+        isOpen={isUrlModalOpen}
+        onClose={handleCloseUrlModal}
+        onSubmit={handleUrlSubmit}
+      />
     </div>
   );
 };
