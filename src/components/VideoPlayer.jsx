@@ -5,6 +5,7 @@ import VolumeControl from './VolumeControl';
 import SettingsButton from './SettingsButton';
 import ContextMenu from './ContextMenu';
 import UrlModal from './UrlModal';
+import SettingsModal from './SettingsModal';
 import { showPlaybackFeedback, showVolumeFeedback, showSkipFeedback } from '../utils/videoFeedback';
 import { KEYBOARD_SHORTCUTS, UI_CONSTANTS, SUPPORTED_VIDEO_FORMATS } from '../utils/constants';
 import { extractFileName, createVideoUrl, handleVideoAutoplay } from '../utils/fileUtils';
@@ -43,6 +44,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const playerRef = useRef(null);
   const fileInputRef = useRef(null);
   const isPlayingRef = useRef(isPlaying);
@@ -303,6 +305,14 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
     }
   }, [handleOpenUrl]);
 
+  const handleOpenSettings = useCallback(() => {
+    setIsSettingsModalOpen(true);
+  }, []);
+
+  const handleCloseSettings = useCallback(() => {
+    setIsSettingsModalOpen(false);
+  }, []);
+
   const contextMenuActions = {
     'play-pause': handlePlayPause,
     'open-file': handleOpenFileFromContext,
@@ -313,10 +323,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
       // This will be handled by submenu later
       console.log('Playback speed submenu');
     },
-    'settings': () => {
-      // Settings action - can be implemented later
-      console.log('Settings clicked');
-    },
+    'settings': handleOpenSettings,
   };
 
   return (
@@ -414,7 +421,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
               <i className="ti ti-arrows-maximize small-icon" />
             </button>
 
-            <SettingsButton />
+            <SettingsButton onClick={handleOpenSettings} />
 
             <button className="control-btn fullscreen-btn" onClick={toggleFullscreen}>
               <i className="ti ti-maximize small-icon" />
@@ -436,6 +443,11 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
         isOpen={isUrlModalOpen}
         onClose={handleCloseUrlModal}
         onSubmit={handleUrlSubmit}
+      />
+
+      <SettingsModal 
+        isOpen={isSettingsModalOpen}
+        onClose={handleCloseSettings}
       />
     </div>
   );
