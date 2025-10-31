@@ -58,7 +58,7 @@ const TitleOverlay = ({ onOpenFile, onOpenUrl }) => {
         paddingLeft: 12,
         paddingRight: 12,
         color: '#fff',
-        background: '#000',
+        background: 'rgba(18, 18, 18, 0.98)',
         borderBottom: '1px solid #333',
         WebkitAppRegion: 'drag',
         userSelect: 'none'
