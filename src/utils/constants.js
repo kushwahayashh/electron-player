@@ -23,7 +23,7 @@ export const UI_CONSTANTS = {
 
 // Default values
 export const DEFAULTS = {
-  VOLUME: 0.8,
+  VOLUME: 1.0,
   TITLE: 'Luna',
   WELCOME_MESSAGE: 'Welcome to Luna'
 }

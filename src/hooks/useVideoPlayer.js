@@ -4,6 +4,9 @@ import { revokeVideoUrl } from '../utils/fileUtils'
 
 export const useVideoPlayer = () => {
   const videoRef = useRef(null)
+  const audioContextRef = useRef(null)
+  const gainNodeRef = useRef(null)
+  const sourceNodeRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -21,21 +24,16 @@ export const useVideoPlayer = () => {
 
     let lastUpdateTime = 0
     const updateProgress = () => {
-      // Throttle progress updates to reduce re-renders
       const now = Date.now()
-      if (now - lastUpdateTime < UI_CONSTANTS.PROGRESS_UPDATE_THROTTLE) {
-        return
-      }
+      if (now - lastUpdateTime < UI_CONSTANTS.PROGRESS_UPDATE_THROTTLE) return
       lastUpdateTime = now
-      
       setCurrentTime(video.currentTime)
       setDuration(video.duration || 0)
     }
 
     const updateBuffered = () => {
       if (video.buffered.length > 0) {
-        const bufferedEnd = video.buffered.end(video.buffered.length - 1)
-        setBuffered(bufferedEnd)
+        setBuffered(video.buffered.end(video.buffered.length - 1))
       }
     }
 
@@ -50,8 +48,6 @@ export const useVideoPlayer = () => {
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
 
-    // Set initial volume and playback rate
-    video.volume = volume
     video.playbackRate = 1
 
     return () => {
@@ -63,6 +59,80 @@ export const useVideoPlayer = () => {
       video.removeEventListener('ended', handleEnded)
     }
   }, [])
+
+  // Helper function to initialize Web Audio API
+  const initWebAudio = () => {
+    const video = videoRef.current
+    if (!video?.src || sourceNodeRef.current) return
+
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext()
+      }
+
+      sourceNodeRef.current = audioContextRef.current.createMediaElementSource(video)
+      gainNodeRef.current = audioContextRef.current.createGain()
+      gainNodeRef.current.connect(audioContextRef.current.destination)
+      sourceNodeRef.current.connect(gainNodeRef.current)
+    } catch (error) {
+      console.log('Web Audio API not available:', error)
+    }
+  }
+
+  // Cleanup Web Audio nodes
+  const cleanupWebAudio = () => {
+    if (sourceNodeRef.current) {
+      try {
+        sourceNodeRef.current.disconnect()
+      } catch (e) {}
+      sourceNodeRef.current = null
+    }
+    if (gainNodeRef.current) {
+      try {
+        gainNodeRef.current.disconnect()
+      } catch (e) {}
+      gainNodeRef.current = null
+    }
+  }
+
+  // Initialize Web Audio when video loads
+  useEffect(() => {
+    if (!hasVideo) {
+      cleanupWebAudio()
+      return
+    }
+
+    const timeoutId = setTimeout(initWebAudio, 100)
+    return () => clearTimeout(timeoutId)
+  }, [hasVideo])
+
+  // Sync volume state changes to video element
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    
+    const clampedVolume = Math.max(0, Math.min(2, volume))
+    
+    if (clampedVolume <= 1.0) {
+      video.volume = clampedVolume
+      if (gainNodeRef.current) {
+        gainNodeRef.current.gain.value = 1.0
+      }
+    } else {
+      video.volume = 1.0
+      if (!gainNodeRef.current && video.src) {
+        initWebAudio()
+      }
+      if (gainNodeRef.current) {
+        gainNodeRef.current.gain.value = clampedVolume
+      }
+    }
+    
+    if (clampedVolume > 0) {
+      video.muted = false
+    }
+  }, [volume])
 
   const togglePlay = () => {
     const video = videoRef.current
@@ -118,48 +188,20 @@ export const useVideoPlayer = () => {
     setIsMuted(newMuted)
 
     // If unmuting and volume is 0, set to a reasonable volume level
-    if (!newMuted && (video.volume === 0 || isNaN(video.volume))) {
-      const newVolume = 0.6
+    if (!newMuted && (volume === 0 || isNaN(volume))) {
+      const newVolume = 1.0
       setVolume(newVolume)
-      video.volume = newVolume
-    }
-    
-    // Ensure volume is valid
-    if (!isNaN(video.volume) && video.volume >= 0 && video.volume <= 1) {
-      setVolume(video.volume)
     }
   }
 
   const setVideoVolume = (newVolume) => {
-    const video = videoRef.current
-    if (!video) return
-
-    // Ensure volume is within valid range
-    const clampedVolume = Math.max(0, Math.min(1, newVolume))
-    
-    // Update UI state even without video
+    const clampedVolume = Math.max(0, Math.min(2, newVolume))
     setVolume(clampedVolume)
+    setIsMuted(clampedVolume === 0)
     
-    if (!video.src) {
-      // Just update mute state for UI
-      if (clampedVolume === 0) {
-        setIsMuted(true)
-      } else {
-        setIsMuted(false)
-      }
-      return
-    }
-
-    video.volume = clampedVolume
-    
-    // Only mute if volume is exactly 0
-    if (clampedVolume === 0) {
-      video.muted = true
-      setIsMuted(true)
-    } else {
-      // Unmute if volume is greater than 0
-      video.muted = false
-      setIsMuted(false)
+    const video = videoRef.current
+    if (video?.src) {
+      video.muted = clampedVolume === 0
     }
   }
 
@@ -223,18 +265,12 @@ export const useVideoPlayer = () => {
       }
       
       video.src = src
-      // Reset playback state
       video.load()
-      // Ensure video is not muted by default unless needed
       video.muted = false
-      // Set preload to auto for better loading
       video.preload = 'auto'
-      // Set hasVideo to true when a video is loaded
       setHasVideo(true)
-      // Sync UI state with video state
       setIsPlaying(false)
       setIsMuted(false)
-      video.volume = volume
     }
   }
 

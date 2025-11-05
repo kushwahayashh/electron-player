@@ -14,7 +14,7 @@ const VolumeControl = ({ volume, isMuted, onToggleMute, onVolumeChange, onIntera
     const step = 0.05
     const dir = e.deltaY < 0 ? 1 : -1
     const current = isMuted ? 0 : (typeof volume === 'number' ? volume : 0)
-    const next = Math.max(0, Math.min(1, current + dir * step))
+    const next = Math.max(0, Math.min(2, current + dir * step))
     onInteractionChange?.(true)
     onVolumeChange?.(next)
     // brief grace period to avoid immediate hide while scrolling
@@ -39,10 +39,10 @@ const VolumeControl = ({ volume, isMuted, onToggleMute, onVolumeChange, onIntera
           type="range"
           className="volume-slider"
           min="0"
-          max="1"
+          max="2"
           step="0.01"
           value={isMuted ? 0 : volume}
-          style={{ '--vol-p': `${(isMuted ? 0 : Math.max(0, Math.min(1, volume || 0))) * 100}%` }}
+          style={{ '--vol-p': `${(isMuted ? 0 : Math.max(0, Math.min(2, volume || 0))) * 50}%` }}
           onChange={(e) => onVolumeChange?.(parseFloat(e.target.value))}
           onPointerDown={() => onInteractionChange?.(true)}
           onPointerUp={() => onInteractionChange?.(false)}
