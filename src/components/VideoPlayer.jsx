@@ -35,7 +35,9 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
     loadVideo,
     formatTime,
     playbackRate,
-    setVideoPlaybackRate
+    setVideoPlaybackRate,
+    repeatMode,
+    toggleRepeat
   } = useVideoPlayer();
 
   const [showControls, setShowControls] = useState(true);
@@ -319,6 +321,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
     'open-url': handleOpenUrlFromContext,
     'fullscreen': toggleFullscreen,
     'fit-screen': toggleFitMode,
+    'repeat': toggleRepeat,
     'playback-speed': () => {
       // This will be handled by submenu later
       console.log('Playback speed submenu');
@@ -436,6 +439,7 @@ const VideoPlayer = ({ videoTitle, onVideoTitleChange, onOpenFileRef }) => {
           y={contextMenu.y}
           onClose={handleCloseContextMenu}
           actions={contextMenuActions}
+          repeatMode={repeatMode}
         />
       )}
 

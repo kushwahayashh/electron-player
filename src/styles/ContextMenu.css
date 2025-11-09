@@ -48,6 +48,21 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.context-menu-item.active {
+  background: rgba(100, 150, 255, 0.15);
+  color: #88b4ff;
+}
+
+.context-menu-item.active:hover {
+  background: rgba(100, 150, 255, 0.2);
+  color: #a0c4ff;
+}
+
+.context-menu-item.active i {
+  opacity: 1;
+  color: #88b4ff;
+}
+
 .context-menu-item-content {
   display: flex;
   align-items: center;

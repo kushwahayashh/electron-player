@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/ContextMenu.css';
 
-const ContextMenu = ({ x, y, onClose, actions }) => {
+const ContextMenu = ({ x, y, onClose, actions, repeatMode }) => {
   const menuRef = useRef(null);
   const [position, setPosition] = useState({ x, y });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -60,6 +60,7 @@ const ContextMenu = ({ x, y, onClose, actions }) => {
     { id: 'fullscreen', label: 'Fullscreen', icon: 'ti-maximize', shortcut: 'F' },
     { id: 'fit-screen', label: 'Fit to Screen', icon: 'ti-arrows-maximize' },
     { id: 'divider-3', type: 'divider' },
+    { id: 'repeat', label: 'Repeat', icon: 'ti-repeat', dynamicLabel: true },
     { id: 'playback-speed', label: 'Playback Speed', icon: 'ti-gauge', submenu: true },
     { id: 'audio-track', label: 'Audio Track', icon: 'ti-volume', submenu: true },
     { id: 'subtitle', label: 'Subtitles', icon: 'ti-subtask', submenu: true },
@@ -96,15 +97,22 @@ const ContextMenu = ({ x, y, onClose, actions }) => {
           return <div key={item.id} className="context-menu-divider" />;
         }
 
+        const getLabel = () => {
+          if (item.dynamicLabel && item.id === 'repeat') {
+            return repeatMode === 'one' ? 'Repeat: On' : 'Repeat: Off';
+          }
+          return item.label;
+        };
+
         return (
           <div
             key={item.id}
-            className={`context-menu-item ${item.submenu ? 'has-submenu' : ''}`}
+            className={`context-menu-item ${item.submenu ? 'has-submenu' : ''} ${item.id === 'repeat' && repeatMode === 'one' ? 'active' : ''}`}
             onClick={() => handleItemClick(item)}
           >
             <div className="context-menu-item-content">
               <i className={`ti ${item.icon}`} />
-              <span className="context-menu-item-label">{item.label}</span>
+              <span className="context-menu-item-label">{getLabel()}</span>
             </div>
             {item.submenu && (
               <i className="ti ti-chevron-right context-menu-item-arrow" />

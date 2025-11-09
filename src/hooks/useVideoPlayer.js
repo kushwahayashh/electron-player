@@ -17,6 +17,7 @@ export const useVideoPlayer = () => {
   const [isFitToScreen, setIsFitToScreen] = useState(false)
   const [hasVideo, setHasVideo] = useState(false)
   const [playbackRate, setPlaybackRate] = useState(1)
+  const [repeatMode, setRepeatMode] = useState('off') // 'off', 'one'
 
   useEffect(() => {
     const video = videoRef.current
@@ -39,7 +40,16 @@ export const useVideoPlayer = () => {
 
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
-    const handleEnded = () => setIsPlaying(false)
+    const handleEnded = () => {
+      setIsPlaying(false)
+      if (repeatMode === 'one') {
+        // Restart the video
+        video.currentTime = 0
+        video.play().catch((error) => {
+          console.log('Error replaying video:', error)
+        })
+      }
+    }
 
     video.addEventListener('timeupdate', updateProgress)
     video.addEventListener('progress', updateBuffered)
@@ -47,8 +57,6 @@ export const useVideoPlayer = () => {
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
-
-    video.playbackRate = 1
 
     return () => {
       video.removeEventListener('timeupdate', updateProgress)
@@ -58,7 +66,7 @@ export const useVideoPlayer = () => {
       video.removeEventListener('pause', handlePause)
       video.removeEventListener('ended', handleEnded)
     }
-  }, [])
+  }, [repeatMode])
 
   // Helper function to initialize Web Audio API
   const initWebAudio = () => {
@@ -274,6 +282,13 @@ export const useVideoPlayer = () => {
     }
   }
 
+  const toggleRepeat = () => {
+    setRepeatMode((prev) => {
+      if (prev === 'off') return 'one'
+      return 'off'
+    })
+  }
+
   const formatTime = (seconds) => {
     if (!isFinite(seconds)) return '0:00'
     const hrs = Math.floor(seconds / 3600)
@@ -301,6 +316,7 @@ export const useVideoPlayer = () => {
     isFitToScreen,
     hasVideo,
     playbackRate,
+    repeatMode,
 
     // Methods
     togglePlay,
@@ -313,6 +329,7 @@ export const useVideoPlayer = () => {
     seekTo,
     loadVideo,
     formatTime,
-    setVideoPlaybackRate
+    setVideoPlaybackRate,
+    toggleRepeat
   }
 }
